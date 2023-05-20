@@ -1,6 +1,6 @@
 # 毎日の手順
  
-1. ローカルはmainにいる状況で、最新のリモートリポジトリをpullする
+1. ローカルのmainブランチで、最新のリモートリポジトリをpullする
 ```bash
 git pull origin main
 ```
