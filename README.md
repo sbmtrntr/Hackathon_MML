@@ -16,7 +16,7 @@
     2. docker＋VSCodeを使う場合
        - VSCodeの拡張機能"Remote Development"を入手 
        - Ctrl+Shift+P --> DevContainers: Open Folder in Containerをクリック
-       - フォルダ"streamlit"を選択
+       - フォルダ"Hackathon_MML"を選択
        - docker containerに入ります
     3. 手元の環境を汚してもイイよって場合
        - ```pip install -r .devcontainer\requirements.txt```を実行
