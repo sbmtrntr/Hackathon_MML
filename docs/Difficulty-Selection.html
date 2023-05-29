@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>目指せ！タッチタイパーマン！（仮）</title>
+        <meta name="description" content="Hackathon_MML">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <!----- header----->
+        <header>
+        </header>
+        <nav></nav>
+        <!----- /header ----->
+        
+        <!----- main ----->
+        <div class="container">
+            <form>
+                <input class = "back-button" type="button" value="タイトル画面に戻る" onClick="history.back()">
+                </form>
+            <h2>難易度を選択してください:</h2>
+            <div class="difficulty-buttons">
+                <input class = "button" type="button" onclick="location.href='Easy.js'" value="Easy">
+                <p class="difficulty-description">簡単なレベルでゲームを楽しめます。</p>
+            </div>
+            
+            <div class="difficulty-buttons">
+                <input class = "button" type="button" onclick="location.href='Normal.js'" value="Normal">
+                <p class="difficulty-description">通常のレベルでゲームを楽しめます。</p>
+            </div>
+            
+            <div class="difficulty-buttons">
+                <input class = "button" type="button" onclick="location.href='Hard.js'" value="Hard">
+                <p class="difficulty-description">難しいレベルでゲームを楽しめます。</p>
+            </div>
+        </div>
+        <!----- /main ----->
+        
+        <!----- footer ----->
+        <footer></footer>
+        <!----- /footer ----->
+    </body>
+</html>
