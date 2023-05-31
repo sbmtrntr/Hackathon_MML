@@ -1,0 +1,254 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>test</title>
+    <!--<link rel='stylesheet' type='text/css' href="{% static 'style.css' %}"/>-->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
+
+    <!-- <script src="{% static 'javascript/script.js' %}"></script> -->
+    <!--<script type="text/javascript" src="{% static 'script.js' %}"></script>-->
+    <!--<img src="{% static 'img/planeship/bocchi.png' %}" />-->
+    <!-- <script>
+
+    function arrayShuffle(array) {
+      for(let i = (array.length - 1); 0 < i; i--){
+
+        // 0〜(i+1)の範囲で値を取得
+        let r = Math.floor(Math.random() * (i + 1));
+
+        // 要素の並び替えを実行
+        let tmp = array[i];
+        array[i] = array[r];
+        array[r] = tmp;
+      }
+      return array;
+    }
+
+    let ans = ["りんご","ばなな","めろん","まんごー","いちご","ぶるーべりー","みかん"]
+    let Q = ["ringo","banana","meron","mango-","ichigo","buru-beri-","mikan"];//問題文
+
+    var Q_nums = [];
+    for(let i=0; i < Q.length; i++) {
+      Q_nums.push(i); //問題の出す順番の羅列
+    }
+
+    for(let i=0; i < 5; i++){
+      arrayShuffle(Q_nums); //順番のシャッフル
+    }
+    console.log(Q_nums)
+
+    let Q_char_i = 0;//回答初期値・現在単語どこまで合っているか判定している文字番号
+
+    let Q_i = 0; //今何問目かを保存
+
+    let Q_No = Q_nums[Q_i]; //最初に出す問題番号の取得
+
+    let Q_l = Q[Q_No].length;//計算用の文字の長さ
+
+    window.addEventListener("keydown", push_Keydown);//ボタンを押したら行う処理を登録
+
+    var hp = new Image();
+    hp.src = "static/img/HP_0.png"; //HPが減ったとき用の画像
+    var hp_max = 3 //hpの数値
+
+    var startflag = 0;
+
+    function push_Keydown(event){ //こっからはボタンを押したときの処理
+      let keyCode = event.key;
+      console.log(keyCode)
+      if(startflag == 1){ //ゲームがスタートしてたら
+        if (Q_l == Q_l-Q_char_i){ //開始直後
+          document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
+          document.getElementById("answer").innerHTML = ans[Q_No];
+        }
+        if (Q[Q_No].charAt(Q_char_i) == keyCode) { //押したキーが合っていたら
+          Q_char_i++; //番号を一つ進める１足す
+
+          //文字の色を変える
+          document.getElementById("start").innerHTML = '<span style="color:red;">'+Q[Q_No].substring(0, Q_char_i)+'</span>'+Q[Q_No].substring(Q_char_i, Q_l);
+        
+          if (Q_l == Q_char_i){ //全部の文字に正解したら
+            if (Q_i < Q.length-1){ //それが最終問題でなかったら
+              Q_i++; //次の問題番号のindexを取得
+              Q_No = Q_nums[Q_i]; //問題番号の取得
+              console.log(Q_i);
+              Q_l = Q[Q_No].length;//計算用の文字の長さ
+              Q_char_i = 0; //文字のインデックスの初期化
+            
+              document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //新たな問題を書き出す
+              document.getElementById("answer").innerHTML = ans[Q_No];
+            }
+            else{
+              document.getElementById("answer").innerHTML = '<h1>'+"finish"+'</h1>';
+              document.getElementById("start").innerHTML = "";
+              setTimeout(function(){
+                console.log("I am the third log after 5 seconds");
+              },5000);
+            }
+          }
+        }else{ //キー入力を間違えたら
+          // let imgname = "image" + hp;
+          // document.getElementById(imgname).src = hp.src;
+          // hp = hp - 1;
+          hp_max = hpDown(hp_max,hp)
+        }
+      }else if(startflag == 0){ //ゲーム開始してなかったら
+        if (keyCode == "Enter"){
+          startflag = 1 //開始フラグを立てる
+          document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
+          document.getElementById("answer").innerHTML = ans[Q_No];
+        }
+      }
+    }
+
+    function hpDown(hp, hpImg){
+      let imgname = "image" + hp;
+      document.getElementById(imgname).src = hpImg.src;
+      hp = hp - 1;
+      return hp;
+    }
+    </script> -->
+
+  </head>
+
+  <body>
+    <!--Hello!!-->
+    <!-- <h1>indes.html表示してます</h1>
+    {{ insert_something }}
+    <p>作成者は<b id='test'>{{name}}</b>です。</p>
+    <img src="{% static 'img/planeship/bocchi.png' %}" alt="表示できません" />
+    <h2>メンバー</h2>
+    <ul>
+      {% for title in test_titles %}
+        <li>{{title}}</li>
+      {% endfor %}
+    </ul> -->
+    <!-- <div style="text-align: center"> -->
+    <!-- キー入力部分 -->
+    <div class="background">
+        <!-- <div class="hp_img"> -->
+        <ul>
+          <!-- <h2>HP</h2> -->
+          <img src="{% static 'img/HP_1.png' %}" width="40" height="30" id="image1"/>
+          <img src="{% static 'img/HP_1.png' %}" width="40" height="30" id="image2"/>
+          <img src="{% static 'img/HP_1.png' %}" width="40" height="30" id="image3"/>
+        </ul>
+        <!-- </div> -->
+        <div class = "container">
+          <h1 id="answer" class="text">Pressed Enter Keys</h1>
+          <p id="start" class="text"></p>
+        </div>
+    </div>
+
+    <!-- HP部分 -->
+    
+
+    <!-- </div> -->
+
+    <script>
+
+      function arrayShuffle(array) {
+        for(let i = (array.length - 1); 0 < i; i--){
+  
+          // 0〜(i+1)の範囲で値を取得
+          let r = Math.floor(Math.random() * (i + 1));
+  
+          // 要素の並び替えを実行
+          let tmp = array[i];
+          array[i] = array[r];
+          array[r] = tmp;
+        }
+        return array;
+      }
+  
+      let ans = ["りんご","ばなな","めろん","まんごー","いちご","ぶるーべりー","みかん"]
+      let Q = ["ringo","banana","meron","mango-","ichigo","buru-beri-","mikan"];//問題文
+  
+      var Q_nums = [];
+      for(let i=0; i < Q.length; i++) {
+        Q_nums.push(i); //問題の出す順番の羅列
+      }
+  
+      for(let i=0; i < 5; i++){
+        arrayShuffle(Q_nums); //順番のシャッフル
+      }
+      console.log(Q_nums)
+  
+      let Q_char_i = 0;//回答初期値・現在単語どこまで合っているか判定している文字番号
+  
+      let Q_i = 0; //今何問目かを保存
+  
+      let Q_No = Q_nums[Q_i]; //最初に出す問題番号の取得
+  
+      let Q_l = Q[Q_No].length;//計算用の文字の長さ
+  
+      window.addEventListener("keydown", push_Keydown);//ボタンを押したら行う処理を登録
+  
+      var hp = new Image();
+      hp.src = "static/img/HP_0.png"; //HPが減ったとき用の画像
+      var hp_max = 3 //hpの数値
+  
+      var startflag = 0;
+  
+      function push_Keydown(event){ //こっからはボタンを押したときの処理
+        let keyCode = event.key;
+        console.log(keyCode)
+        if(startflag == 1){ //ゲームがスタートしてたら
+          if (Q_l == Q_l-Q_char_i){ //開始直後
+            document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
+            document.getElementById("answer").innerHTML = ans[Q_No];
+          }
+          if (Q[Q_No].charAt(Q_char_i) == keyCode) { //押したキーが合っていたら
+            Q_char_i++; //番号を一つ進める１足す
+  
+            //文字の色を変える
+            document.getElementById("start").innerHTML = '<span style="color:red;">'+Q[Q_No].substring(0, Q_char_i)+'</span>'+Q[Q_No].substring(Q_char_i, Q_l);
+          
+            if (Q_l == Q_char_i){ //全部の文字に正解したら
+              if (Q_i < Q.length-1){ //それが最終問題でなかったら
+                Q_i++; //次の問題番号のindexを取得
+                Q_No = Q_nums[Q_i]; //問題番号の取得
+                console.log(Q_i);
+                Q_l = Q[Q_No].length;//計算用の文字の長さ
+                Q_char_i = 0; //文字のインデックスの初期化
+              
+                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //新たな問題を書き出す
+                document.getElementById("answer").innerHTML = ans[Q_No];
+              }
+              else{
+                document.getElementById("answer").innerHTML = '<h1>'+"finish"+'</h1>';
+                document.getElementById("start").innerHTML = "";
+                setTimeout(function(){
+                  console.log("I am the third log after 5 seconds");
+                },5000);
+              }
+            }
+          }else{ //キー入力を間違えたら
+            // let imgname = "image" + hp;
+            // document.getElementById(imgname).src = hp.src;
+            // hp = hp - 1;
+            hp_max = hpDown(hp_max,hp)
+          }
+        }else if(startflag == 0){ //ゲーム開始してなかったら
+          if (keyCode == "Enter"){
+            startflag = 1 //開始フラグを立てる
+            document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
+            document.getElementById("answer").innerHTML = ans[Q_No];
+          }
+        }
+      }
+  
+      function hpDown(hp, hpImg){
+        let imgname = "image" + hp;
+        document.getElementById(imgname).src = hpImg.src;
+        hp = hp - 1;
+        return hp;
+      }
+      </script>
+
+
+  </body>
+</html>
