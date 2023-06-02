@@ -4,6 +4,9 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
+def index(req):
+    return render(req, 'login_app/index.html')
+
 def signup_view(request):
     if request.method == 'POST':
 
@@ -11,7 +14,12 @@ def signup_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect(to='/login_app/user/')
+            user = request.user
+            param = {
+                'users':user
+            }
+            # return redirect(to='/user/')
+            return render (request,'login_app/title.html',param)
 
     else:
         form = SignupForm()
@@ -21,6 +29,15 @@ def signup_view(request):
     }
 
     return render(request, 'login_app/signup.html', param)
+
+def title(request):
+    return render(request, 'login_app/title.html')
+
+def HowToPlay(request):
+    return render(request, 'login_app/How-to-Play.html')
+
+def Diffsec(request):
+    return render(request, 'login_app/Difficulty-Selection.html')
 
 def login_view(request):
     if request.method == 'POST':
@@ -33,7 +50,12 @@ def login_view(request):
             if user:
                 login(request, user)
                 if next == 'None':
-                    return redirect(to='/login_app/user/')
+                    user = request.user
+                    param = {
+                        'user':user
+                    }
+                    # return redirect(to='/user/')
+                    return render (request,'login_app/title.html',param)
                 else:
                     return redirect(to=next)
     else:
