@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>目指せ！タッチタイパーマン！（仮）</title>
+        <meta name="description" content="Hackathon_MML">
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+    </head>
+    <body>
+        <!----- header----->
+        <!-- <header></header> -->
+        <!----- /header ----->
+        
+        <!----- main ----->
+        <div class="container">
+            <h1>目指せ！タッチタイパーマン！（仮）</h1>
+            <form action="{% url 'title'%}" method="post">
+                <div id="start-screen">
+                    {% csrf_token %}
+                        <input class = "button" type="submit" href="{% url 'diff_select'%}" value="プレイ">
+                        <input class = "button" type="submit" href="{% url 'how_to_play'%}" value="遊び方">
+                </div>
+            </form>
+        </div>
+        <!----- /main ----->
+        
+        <!----- footer ----->
+        <!-- <footer></footer> -->
+        <!----- /footer ----->
+    </body>
+</html>
