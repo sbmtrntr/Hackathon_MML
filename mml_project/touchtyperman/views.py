@@ -20,24 +20,27 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torchvision import transforms
+import torch.utils.data as data
 
 
-import touchtyperman.cnn
-import touchtyperman.data_prep
-import touchtyperman.train
+import touchtyperman.cnn as cnn
+import touchtyperman.data_prep as data_prep
+import touchtyperman.train as train
 
 
 
 
 
-face_detector = dlib.get_frontal_face_detector()
-predictor_path = 'touchtyperman/models/shape_predictor_68_face_landmarks.dat'
-face_predictor = dlib.shape_predictor(predictor_path)
+# face_detector = dlib.get_frontal_face_detector()
+# print(face_detector)
+# predictor_path = 'touchtyperman/models/shape_predictor_68_face_landmarks.dat'
+# face_predictor = dlib.shape_predictor(predictor_path)
 
-cnn_dict = {}
+cnn_dict = {'test': cnn.CNN()}
 transform = transforms.Compose([transforms.ToTensor()])
 
 softmax = nn.Softmax(dim=1)
+threshold = 0.4
 
 cnt_dict = {}
 
@@ -55,6 +58,17 @@ def index(request):
 
 
 
+class RealtimeDataset(data.Dataset):
+    def __init__(self, img, transform):
+        self.img = img
+        self.transform = transform
+
+    def __len__(self):
+        return 1
+
+    def __getitem__(self, index):
+        return self.transform(self.img)
+
 
 
 
@@ -71,6 +85,7 @@ def get_data(request):
     dtype = request.POST.get('type')
     user = request.POST.get('user')
     file = request.FILES['img']
+    batch_size = 1
 
 
     if dtype == 'temp':
@@ -84,12 +99,28 @@ def get_data(request):
         if landmark is None:
             d = {'result': 2}
         else:
-            eye_img = data_prep.eye_crop(img, landmark)
-            transformed_img = transform(eye_img)
-            output = softmax(net(transformed_img))
-            d = {'success': output}
-        os.remove(file_name)
+            with torch.no_grad():
+                eye_img = data_prep.eye_crop(img, landmark)
+                # transformed_img = transform(eye_img)
+                dataset = RealtimeDataset(eye_img, transform)
+                dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size)
+                temp_img = dataloader.__iter__()
+                input_img = next(temp_img)
+                output_net = net(input_img)
+                # print(output_net)
+                output_softmax = softmax(output_net).squeeze().tolist()
+                print(output_softmax)
+                if output_softmax[1] > threshold:
+                    d = {'result': 1}
+                else:
+                    d = {'result': 0}
         return JsonResponse(d)
+
+
+    elif dtype == 'finish':
+        file_name = f'touchtyperman/img/{user}/temp/image.jpg'
+        if os.path.exists(file_name):
+            os.remove(file_name)
 
 
     elif dtype == 'finetuning':
