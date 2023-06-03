@@ -114,13 +114,114 @@
         'z-index': -10
       });
   
-      let ans = ["あそさん","けっこんかんてい","ちぇっくめいと","まんごー","なっとう",
-                 "ぶるーべりー","みかん","よゆう","さとう","はる"]
+      let ans = [
+        "In object-oriented programming, classes define the structure of objects.",
+        "Conditional statements control the flow of execution based on conditions.",
+        "A variable is a named container that stores data values.",
+        "Arrays hold multiple values of the same data type sequentially.",
+        "Loops repeatedly execute a block of code until a condition changes.",
+        "Functions are reusable blocks of code that perform specific tasks.",
+        "Inheritance allows a class to inherit properties from another class.",
+        "Polymorphism enables objects to take multiple forms based on context.",
+        "Encapsulation bundles data and methods within a single entity.",
+        "Recursion is a technique where a function calls itself repeatedly.",
+        "Pointers store memory addresses of other variables or objects.",
+        "Exception handling deals with unexpected errors during program execution.",
+        "Abstraction hides complex implementation details and provides simplified interfaces.",
+        "Data types define the kind of data that can be stored.",
+        "Libraries are collections of prewritten code for specific functionalities.",
+        "Debugging is the process of identifying and fixing program errors.",
+        "Modularity promotes code organization by breaking it into smaller modules.",
+        "Syntax refers to the rules governing the structure of programming languages.",
+        "IDEs (Integrated Development Environments) provide tools for programming.",
+        "Version control systems track and manage changes to code over time.",
+        "Object-oriented programming focuses on creating and manipulating objects.",
+        "APIs (Application Programming Interfaces) define how software components interact.",
+        "Databases store and manage structured sets of data.",
+        "Multithreading enables simultaneous execution of multiple threads within a program.",
+        "Asynchronous programming allows tasks to run independently and non-blockingly.",
+        "Variables store data that can be manipulated and referenced later.",
+        "Debuggers help programmers identify and fix software defects efficiently.",
+        "Object-oriented programming emphasizes code reusability and modularity.",
+        "API documentation provides instructions on how to use specific functions.",
+        "Code comments provide explanations or notes within the program's source code.",
+        "Compilers translate high-level programming languages into machine-readable code.",
+        "Version control allows teams to collaborate on software development projects.",
+        "Unit testing verifies the functionality of individual program components.",
+        "Agile methodology emphasizes iterative and incremental software development.",
+        "Software frameworks provide a foundation for building applications efficiently.",
+        "Data structures organize and store data for efficient access and manipulation.",
+        "Algorithms are step-by-step procedures for solving computational problems.",
+        "Recursive algorithms solve problems by breaking them down into smaller instances.",
+        "Functional programming focuses on writing programs with pure functions.",
+        "Memory management ensures efficient allocation and deallocation of system memory.",
+        "Software architecture defines the overall structure and organization of a system.",
+        "Database management systems handle the storage and retrieval of structured data.",
+        "Event-driven programming responds to user actions or system events.",
+        "Parallel computing utilizes multiple processors or cores to speed up computations.",
+        "Regular expressions provide a powerful tool for pattern matching and text manipulation.",
+        "Software testing ensures that a program functions correctly and meets requirements.",
+        "Continuous integration automates the process of merging code changes in a shared repository.",
+        "Object-relational mapping tools facilitate data interaction between object-oriented code and databases.",
+        "Backend development focuses on building server-side components of software applications.",
+        "Machine learning algorithms enable computers to learn and make predictions from data.",
+      ]
 
-      let Q = ["asosann","kekkonnkanntei","tyekkumeito","manngo-","nattou",
-               "buru-beri-","mikann","yoyuu","satou","haru"];//問題文
+      let Q = [
+        "In object-oriented programming, classes define the structure of objects.",
+        "Conditional statements control the flow of execution based on conditions.",
+        "A variable is a named container that stores data values.",
+        "Arrays hold multiple values of the same data type sequentially.",
+        "Loops repeatedly execute a block of code until a condition changes.",
+        "Functions are reusable blocks of code that perform specific tasks.",
+        "Inheritance allows a class to inherit properties from another class.",
+        "Polymorphism enables objects to take multiple forms based on context.",
+        "Encapsulation bundles data and methods within a single entity.",
+        "Recursion is a technique where a function calls itself repeatedly.",
+        "Pointers store memory addresses of other variables or objects.",
+        "Exception handling deals with unexpected errors during program execution.",
+        "Abstraction hides complex implementation details and provides simplified interfaces.",
+        "Data types define the kind of data that can be stored.",
+        "Libraries are collections of prewritten code for specific functionalities.",
+        "Debugging is the process of identifying and fixing program errors.",
+        "Modularity promotes code organization by breaking it into smaller modules.",
+        "Syntax refers to the rules governing the structure of programming languages.",
+        "IDEs (Integrated Development Environments) provide tools for programming.",
+        "Version control systems track and manage changes to code over time.",
+        "Object-oriented programming focuses on creating and manipulating objects.",
+        "APIs (Application Programming Interfaces) define how software components interact.",
+        "Databases store and manage structured sets of data.",
+        "Multithreading enables simultaneous execution of multiple threads within a program.",
+        "Asynchronous programming allows tasks to run independently and non-blockingly.",
+        "Variables store data that can be manipulated and referenced later.",
+        "Debuggers help programmers identify and fix software defects efficiently.",
+        "Object-oriented programming emphasizes code reusability and modularity.",
+        "API documentation provides instructions on how to use specific functions.",
+        "Code comments provide explanations or notes within the program's source code.",
+        "Compilers translate high-level programming languages into machine-readable code.",
+        "Version control allows teams to collaborate on software development projects.",
+        "Unit testing verifies the functionality of individual program components.",
+        "Agile methodology emphasizes iterative and incremental software development.",
+        "Software frameworks provide a foundation for building applications efficiently.",
+        "Data structures organize and store data for efficient access and manipulation.",
+        "Algorithms are step-by-step procedures for solving computational problems.",
+        "Recursive algorithms solve problems by breaking them down into smaller instances.",
+        "Functional programming focuses on writing programs with pure functions.",
+        "Memory management ensures efficient allocation and deallocation of system memory.",
+        "Software architecture defines the overall structure and organization of a system.",
+        "Database management systems handle the storage and retrieval of structured data.",
+        "Event-driven programming responds to user actions or system events.",
+        "Parallel computing utilizes multiple processors or cores to speed up computations.",
+        "Regular expressions provide a powerful tool for pattern matching and text manipulation.",
+        "Software testing ensures that a program functions correctly and meets requirements.",
+        "Continuous integration automates the process of merging code changes in a shared repository.",
+        "Object-relational mapping tools facilitate data interaction between object-oriented code and databases.",
+        "Backend development focuses on building server-side components of software applications.",
+        "Machine learning algorithms enable computers to learn and make predictions from data.",
+      ];//問題文
   
       var Q_nums = [];
+      var Qmaxlength = 10;
       for(let i=0; i < Q.length; i++) {
         Q_nums.push(i); //問題の出す順番の羅列
       }
@@ -152,28 +253,36 @@
   
       function push_Keydown(event){ //こっからはボタンを押したときの処理
         let keyCode = event.key;
+
         console.log(keyCode)
         if(startflag == 1 && deadFlag == 0){ //ゲームがスタートしていて、gameoverしてなかったら
           if (Q_l == Q_l-Q_char_i){ //開始直後
-            document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
-            document.getElementById("answer").innerHTML = ans[Q_No];
+            document.getElementById("start").innerHTML = String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)}); //問題を書き出す
+            document.getElementById("answer").innerHTML = String.raw({"raw":ans[Q_No]});
+          }
+          if ("Shift" == keyCode){
+              return;
           }
           if (Q[Q_No].charAt(Q_char_i) == keyCode) { //押したキーが合っていたら
             Q_char_i++; //番号を一つ進める１足す
   
             //文字の色を変える
-            document.getElementById("start").innerHTML = '<span style="color:red;">'+Q[Q_No].substring(0, Q_char_i)+'</span>'+Q[Q_No].substring(Q_char_i, Q_l);
+            if (' ' == keyCode) {
+              document.getElementById("start").innerHTML = '<span style="color:red;">'+String.raw({"raw":Q[Q_No].substring(0, Q_char_i-1)})+'_'+'</span>'+String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)});
+            } else {
+              document.getElementById("start").innerHTML = '<span style="color:red;">'+String.raw({"raw":Q[Q_No].substring(0, Q_char_i)})+'</span>'+String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)});
+            }
           
             if (Q_l == Q_char_i){ //全部の文字に正解したら
-              if (Q_i < Q.length-1){ //それが最終問題でなかったら
+              if (Q_i < Qmaxlength-1){ //それが最終問題でなかったら
                 Q_i++; //次の問題番号のindexを取得
                 Q_No = Q_nums[Q_i]; //問題番号の取得
                 console.log(Q_i);
                 Q_l = Q[Q_No].length;//計算用の文字の長さ
                 Q_char_i = 0; //文字のインデックスの初期化
               
-                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //新たな問題を書き出す
-                document.getElementById("answer").innerHTML = ans[Q_No];
+                document.getElementById("start").innerHTML = String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)}); //新たな問題を書き出す
+                document.getElementById("answer").innerHTML = String.raw({"raw":ans[Q_No]});
               }
               else{ //最終問題まで突破したら
 
@@ -327,7 +436,7 @@
       function retryButton(){ //もう一度を選んだ場合の初期化処理
 
         Q_nums = [];
-        for(let i=0; i < Q.length; i++) {
+        for(let i=0; i < Qmaxlength; i++) {
           Q_nums.push(i); //問題の出す順番の羅列
         }  
         for(let i=0; i < 5; i++){
