@@ -116,14 +116,143 @@
   
       var ScoreLis = [0];
 
-      let ans = ["あそさん","けっこんかんてい","たっくすへいぶん","まんごー","なっとう",
-                 "ぶるーべりー","みかん","よゆう","さとう","はる"]
+      let ans = [
+        "git init",
+        "git clone repository",
+        "git add file",
+        `git commit -m "message"`,
+        "git status",
+        "git log",
+        "git branch",
+        "git checkout branch",
+        "git merge branch",
+        "git pull",
+        "git push",
+        "git remote add name url",
+        "git remote -v",
+        "git diff",
+        "git fetch",
+        "docker build",
+        "docker run",
+        "docker stop",
+        "docker restart",
+        "docker rm",
+        "docker rmi",
+        "docker ps",
+        "docker images",
+        "docker pull",
+        "docker push",
+        "docker exec",
+        "docker logs",
+        "docker network",
+        "docker volume",
+        "docker-compose up",
+        "if-else",
+        "for-loop",
+        "while-loop",
+        "try-catch",
+        "switch-case",
+        "do-while",
+        "true-false",
+        "null-pointer",
+        "file-name",
+        "class-object",
+        "input-output",
+        "string-array",
+        "public-private",
+        "function-call",
+        "variable-name",
+        "error-handling",
+        "user-input",
+        "method-call",
+        "data-type",
+        "nested-loop",
+        "code-block",
+        "return-value",
+        "break-statement",
+        "conditional-statement",
+        "constructor-function",
+        "loop-control",
+        "constant-variable",
+        "logical-operator",
+        "access-modifier",
+        "array-index",
+        "code-comment",
+        "exception-handling",
+        "code-snippet",
+        "boolean-expression",
+      ];
 
-      let Q = ["asosann","kekkonnkanntei","takkusuheibunn","manngo-","nattou",
-               "buru-beri-","mikann","yoyuu","satou","haru"];//問題文
+      let Q = [
+        "git init",
+        "git clone repository",
+        "git add file",
+        `git commit -m "message"`,
+        "git status",
+        "git log",
+        "git branch",
+        "git checkout branch",
+        "git merge branch",
+        "git pull",
+        "git push",
+        "git remote add name url",
+        "git remote -v",
+        "git diff",
+        "git fetch",
+        "docker build",
+        "docker run",
+        "docker stop",
+        "docker restart",
+        "docker rm",
+        "docker rmi",
+        "docker ps",
+        "docker images",
+        "docker pull",
+        "docker push",
+        "docker exec",
+        "docker logs",
+        "docker network",
+        "docker volume",
+        "docker-compose up",
+        "if-else",
+        "for-loop",
+        "while-loop",
+        "try-catch",
+        "switch-case",
+        "do-while",
+        "true-false",
+        "null-pointer",
+        "file-name",
+        "class-object",
+        "input-output",
+        "string-array",
+        "public-private",
+        "function-call",
+        "variable-name",
+        "error-handling",
+        "user-input",
+        "method-call",
+        "data-type",
+        "nested-loop",
+        "code-block",
+        "return-value",
+        "break-statement",
+        "conditional-statement",
+        "constructor-function",
+        "loop-control",
+        "constant-variable",
+        "logical-operator",
+        "access-modifier",
+        "array-index",
+        "code-comment",
+        "exception-handling",
+        "code-snippet",
+        "boolean-expression",
+      ];//問題文
   
       var Q_nums = [];
-      for(let i=0; i < Q.length; i++) {
+      var Qmaxlength = 10;
+      for(let i=0; i < Qmaxlength; i++) {
         Q_nums.push(i); //問題の出す順番の羅列
       }
   
@@ -160,22 +289,29 @@
             document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
             document.getElementById("answer").innerHTML = ans[Q_No];
           }
+          if ("Shift" == keyCode){
+              return;
+          }
           if (Q[Q_No].charAt(Q_char_i) == keyCode) { //押したキーが合っていたら
             Q_char_i++; //番号を一つ進める１足す
   
             //文字の色を変える
-            document.getElementById("start").innerHTML = '<span style="color:red;">'+Q[Q_No].substring(0, Q_char_i)+'</span>'+Q[Q_No].substring(Q_char_i, Q_l);
+            if (' ' == keyCode) {
+              document.getElementById("start").innerHTML = '<span style="color:red;">'+String.raw({"raw":Q[Q_No].substring(0, Q_char_i-1)})+'_'+'</span>'+String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)});
+            } else {
+              document.getElementById("start").innerHTML = '<span style="color:red;">'+String.raw({"raw":Q[Q_No].substring(0, Q_char_i)})+'</span>'+String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)});
+            }
           
             if (Q_l == Q_char_i){ //全部の文字に正解したら
-              if (Q_i < Q.length-1){ //それが最終問題でなかったら
+              if (Q_i < Qmaxlength-1){ //それが最終問題でなかったら
                 Q_i++; //次の問題番号のindexを取得
                 Q_No = Q_nums[Q_i]; //問題番号の取得
                 console.log(Q_i);
                 Q_l = Q[Q_No].length;//計算用の文字の長さ
                 Q_char_i = 0; //文字のインデックスの初期化
               
-                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //新たな問題を書き出す
-                document.getElementById("answer").innerHTML = ans[Q_No];
+                document.getElementById("start").innerHTML = String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)}); //新たな問題を書き出す
+                document.getElementById("answer").innerHTML = String.raw({"raw":ans[Q_No]});
               }
               else{ //最終問題まで突破したら
 
@@ -329,7 +465,7 @@
       function retryButton(){ //もう一度を選んだ場合の初期化処理
 
         Q_nums = [];
-        for(let i=0; i < Q.length; i++) {
+        for(let i=0; i < Qmaxlength; i++) {
           Q_nums.push(i); //問題の出す順番の羅列
         }  
         for(let i=0; i < 5; i++){

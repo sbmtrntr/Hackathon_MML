@@ -134,11 +134,157 @@
         'z-index': -10
       });
   
-      let ans = ["sigmoid","ばなな","めろん","まんごー","なっとう","ぶるーべりー","みかん","よゆう","さとう","はる"]
-      let Q = ["sigmoid","banana","meronn","manngo-","nattou","buru-beri-","mikann","yoyuu","satou","haru"];//問題文
+      let ans = [
+        "push",
+        "pull",
+        "branch",
+        "git",
+        "add",
+        "commit",
+        "origin",
+        "main",
+        "clone",
+        "remote", 
+        "checkout", 
+        "switch", 
+        "fetch", 
+        "merge",
+        "ls",
+        "cd",
+        "pwd",
+        "mkdir",
+        "rm",
+        "cp",
+        "mv",
+        "touch",
+        "cat",
+        "grep",
+        "ps",
+        "kill",
+        "bg",
+        "fg",
+        "echo",
+        "read",
+        "apt",
+        "yum",
+        "brew",
+        "chmod",
+        "bool",
+        "break",
+        "byte",
+        "case",
+        "catch",
+        "char",
+        "class",
+        "const",
+        "do",
+        "double",
+        "else",
+        "enum",
+        "event",
+        "false",
+        "fixed",
+        "float",
+        "for",
+        "goto",
+        "if",
+        "is",
+        "long",
+        "new",
+        "null",
+        "object",
+        "out",
+        "ref",
+        "return",
+        "static",
+        "string",
+        "switch",
+        "this",
+        "throw",
+        "true",
+        "try",
+        "using",
+        "void",
+        "while",
+      ];
+      let Q = [
+      "push",
+        "pull",
+        "branch",
+        "git",
+        "add",
+        "commit",
+        "origin",
+        "main",
+        "clone",
+        "remote", 
+        "checkout", 
+        "switch", 
+        "fetch", 
+        "merge",
+        "ls",
+        "cd",
+        "pwd",
+        "mkdir",
+        "rm",
+        "cp",
+        "mv",
+        "touch",
+        "cat",
+        "grep",
+        "ps",
+        "kill",
+        "bg",
+        "fg",
+        "echo",
+        "read",
+        "apt",
+        "yum",
+        "brew",
+        "chmod",
+        "bool",
+        "break",
+        "byte",
+        "case",
+        "catch",
+        "char",
+        "class",
+        "const",
+        "do",
+        "double",
+        "else",
+        "enum",
+        "event",
+        "false",
+        "fixed",
+        "float",
+        "for",
+        "goto",
+        "if",
+        "is",
+        "long",
+        "new",
+        "null",
+        "object",
+        "out",
+        "ref",
+        "return",
+        "static",
+        "string",
+        "switch",
+        "this",
+        "throw",
+        "true",
+        "try",
+        "using",
+        "void",
+        "while",
+      ]
   
       var Q_nums = [];
-      for(let i=0; i < Q.length; i++) {
+      var Qmaxlength = 10;
+
+      for(let i=0; i < Qmaxlength; i++) {
         Q_nums.push(i); //問題の出す順番の羅列
       }
   
@@ -157,6 +303,7 @@
   
       var hp = new Image();
       hp.src = "static/img/HP_0.png"; //HPが減ったとき用の画像
+
       var hp_max = 5 //hpの数
   
       var startflag = 0; //ゲーム開始フラグ
@@ -171,28 +318,36 @@
   
       function push_Keydown(event){ //こっからはボタンを押したときの処理
         let keyCode = event.key;
+
         console.log(keyCode)
         if(startflag == 1 && deadFlag == 0){ //ゲームがスタートしていて、gameoverしてなかったら
           if (Q_l == Q_l-Q_char_i){ //開始直後
-            document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
-            document.getElementById("answer").innerHTML = ans[Q_No];
+            document.getElementById("start").innerHTML = String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)}); //問題を書き出す
+            document.getElementById("answer").innerHTML = String.raw({"raw":ans[Q_No]});
+          }
+          if ("Shift" == keyCode){
+              return;
           }
           if (Q[Q_No].charAt(Q_char_i) == keyCode) { //押したキーが合っていたら
             Q_char_i++; //番号を一つ進める１足す
   
             //文字の色を変える
-            document.getElementById("start").innerHTML = '<span style="color:red;">'+Q[Q_No].substring(0, Q_char_i)+'</span>'+Q[Q_No].substring(Q_char_i, Q_l);
+            if (' ' == keyCode) {
+              document.getElementById("start").innerHTML = '<span style="color:red;">'+String.raw({"raw":Q[Q_No].substring(0, Q_char_i-1)})+'_'+'</span>'+String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)});
+            } else {
+              document.getElementById("start").innerHTML = '<span style="color:red;">'+String.raw({"raw":Q[Q_No].substring(0, Q_char_i)})+'</span>'+String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)});
+            }
           
             if (Q_l == Q_char_i){ //全部の文字に正解したら
-              if (Q_i < Q.length-1){ //それが最終問題でなかったら
+              if (Q_i < Qmaxlength-1){ //それが最終問題でなかったら
                 Q_i++; //次の問題番号のindexを取得
                 Q_No = Q_nums[Q_i]; //問題番号の取得
                 console.log(Q_i);
                 Q_l = Q[Q_No].length;//計算用の文字の長さ
                 Q_char_i = 0; //文字のインデックスの初期化
               
-                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //新たな問題を書き出す
-                document.getElementById("answer").innerHTML = ans[Q_No];
+                document.getElementById("start").innerHTML = String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)}); //新たな問題を書き出す
+                document.getElementById("answer").innerHTML = String.raw({"raw":ans[Q_No]});
               }
               else{ //最終問題まで突破したら
                 stop_flag = true;
@@ -388,7 +543,7 @@
         stop_flag = false
 
         Q_nums = [];
-        for(let i=0; i < Q.length; i++) {
+        for(let i=0; i < Qmaxlength; i++) {
           Q_nums.push(i); //問題の出す順番の羅列
         }  
         for(let i=0; i < 5; i++){
