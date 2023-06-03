@@ -1,0 +1,19 @@
+{
+	"name": "TouchTyperMan",
+
+    "dockerFile": "Dockerfile",
+
+	// "workspaceFolder": "/home",
+	// "workspaceMount": "source=${localWorkspaceFolder},target=/home,type=bind",
+
+	"appPort": ["8080:80"],
+	"postAttachCommand": "/usr/local/apache2/bin/apachectl restart",
+
+	"runArgs": [
+        "--name", "typerman"
+    ],
+
+	"extensions": [
+		"ms-python.python"
+	]
+}
