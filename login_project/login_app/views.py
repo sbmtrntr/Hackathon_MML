@@ -48,10 +48,10 @@ def gameEasy(request):
     return render(request, 'login_app/game_easy.html')
 
 def gameNormal(request):
-    return render(request, 'login_app/game_hard.html')
+    return render(request, 'login_app/game_normal.html')
 
 def gameHard(request):
-    return render(request, 'login_app/game_nightmare.html')
+    return render(request, 'login_app/game_hard.html')
 
 def login_view(request):
     if request.method == 'POST':
