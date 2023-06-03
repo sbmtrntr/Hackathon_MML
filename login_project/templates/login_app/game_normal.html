@@ -72,6 +72,39 @@
 
     <script>
 
+      //おまじない
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      var csrftoken = getCookie("csrftoken");
+
+      function csrfSafeMethod(method) {
+        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        },
+      });  
+      //ここまで
+
       $('#fullOverlay').css({ //ゲームオーバー画面を下にしておく
         'display': 'none',
         'z-index': -10
@@ -81,6 +114,8 @@
         'z-index': -10
       });
   
+      var ScoreLis = [0];
+
       let ans = ["あそさん","けっこんかんてい","たっくすへいぶん","まんごー","なっとう",
                  "ぶるーべりー","みかん","よゆう","さとう","はる"]
 
@@ -258,7 +293,30 @@
         // let minus = (1000*hp_max/(1+Math.exp(-0.5*time))) - 0.5*hp_max; //シグモイド関数
         let minus = 2*(1/(1+Math.exp(-0.5*time)) - 0.5) * 1000*hp_max
         let Score = 2.5*(1000*hp_max - minus);
+
+        ScoreLis.push(Score.toFixed(0));
+
         document.getElementById("finalScore").innerHTML = "Your Score : " + Score.toFixed(0);
+      }
+
+      //DataBaseの更新
+      function SaveScore(){       
+
+        let query = location.search;
+        let value = query.split('=');
+
+        var temp = value[1];
+
+        var tags = [temp,Math.max.apply(null,ScoreLis)];
+
+        $.ajax({
+          url:"{% url 'login_app:save_data' %}",
+          dataType:"text",
+          data:{"tags":tags},
+          type:'POST',
+        }).done(function(data){
+          console.log(data);
+        });
       }
 
       //時間を進める
@@ -318,7 +376,9 @@
 
         let temp = value[1];
 
-        location.href = "{% url 'login_app:title2' %}" + "?name=" + encodeURIComponent(temp);
+        SaveScore();
+
+        location.href = "{% url 'login_app:diffsec' %}" + "?name=" + encodeURIComponent(temp);
       }
 
       </script>

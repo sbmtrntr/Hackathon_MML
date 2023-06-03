@@ -69,6 +69,42 @@
 
     <script>
 
+      var ScoreLis = [0];
+
+      //おまじない
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      var csrftoken = getCookie("csrftoken");
+
+      function csrfSafeMethod(method) {
+        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        },
+      });  
+      //ここまで
+
+
       $('#fullOverlay').css({ //ゲームオーバー画面を下にしておく
         'display': 'none',
         'z-index': -10
@@ -254,8 +290,31 @@
         let time = Math.max(PassSec-30 , 0); //経過時間から30秒引いておく
         // let minus = (1000*hp_max/(1+Math.exp(-0.5*time))) - 0.5*hp_max; //シグモイド関数
         let minus = 2*(1/(1+Math.exp(-0.5*time)) - 0.5) * 1000*hp_max
-        let Score = 2.5*(1000*hp_max - minus)+5000;
+        var Score = 2.5*(1000*hp_max - minus)+5000;
+
+        ScoreLis.push(Score.toFixed(0));
+
         document.getElementById("finalScore").innerHTML = "Your Score : " + Score.toFixed(0);
+      }
+
+      //DataBaseの更新
+      function SaveScore(){       
+
+        let query = location.search;
+        let value = query.split('=');
+
+        var temp = value[1];
+
+        var tags = [temp,Math.max.apply(null,ScoreLis)];
+
+        $.ajax({
+          url:"{% url 'login_app:save_data' %}",
+          dataType:"text",
+          data:{"tags":tags},
+          type:'POST',
+        }).done(function(data){
+          console.log(data);
+        });
       }
 
       //時間を進める
@@ -305,6 +364,17 @@
         document.getElementById("image1").src = hp_img.src; //体力を満タンに戻す
 
         document.getElementById("timeArea").innerHTML = 0;   // 時間をリセット
+      }
+
+      function link_origin(){
+        let query = location.search;
+        let value = query.split('=');
+
+        let temp = value[1];
+
+        SaveScore();
+
+        location.href = "{% url 'login_app:diffsec' %}" + "?name=" + encodeURIComponent(temp);
       }
 
       </script>
