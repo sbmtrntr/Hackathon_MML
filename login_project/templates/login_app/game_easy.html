@@ -74,7 +74,9 @@
         </ul>
         <!-- </div> -->
         <div class = "container">
-          <img src="{% static 'img/move_chara.gif' %}" width="140" height="160" id="imageGif"/>
+          <div>
+            <img src="{% static 'img/mitechan_1.png' %}" width="310" height="340" id="imageGirl"/>
+          </div>
           <h1 id="answer" class="text">Pressed Enter Key</h1>
           <p id="start" class="text"></p>
         </div>
@@ -113,17 +115,10 @@
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
           }
         },
-      });
+      });  
       //ここまで
 
-
-      let query = location.search;
-      let value = query.split('=');
-
-      var userName = value[1]; //userを取得
-
       var ScoreLis = [0];
-
 
       $('#fullOverlay').css({ //ゲームオーバー画面を下にしておく
         'display': 'none',
@@ -166,8 +161,6 @@
       var deadFlag = 0; //ゲームオーバーフラグ
 
       var PassSec = 0;
-
-      var stop_flag = false;
   
       function push_Keydown(event){ //こっからはボタンを押したときの処理
         let keyCode = event.key;
@@ -195,11 +188,8 @@
                 document.getElementById("answer").innerHTML = ans[Q_No];
               }
               else{ //最終問題まで突破したら
-                stop_flag = true;
-                console.log(stop_flag);
-                // clearInterval( camerafunc);
-                // clearInterval( camerafunc);
-                clearInterval( PassageID );   // タイマーを止める
+                //clearInterval( camerafunc);
+                clearInterval( PassageID );   // タイマーを止める                
                 deadFlag = 1; //game over兼clearフラグを上げる
                 $('#fullOverlay1').css({ //game clear画面の出力
                   'display': 'block',
@@ -207,8 +197,6 @@
                 });
 
                 getScore();
-
-                setTimeout(send_finish, 3000)
               }
             }
           }
@@ -230,63 +218,11 @@
             document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
             document.getElementById("answer").innerHTML = ans[Q_No];
             PassageID = setInterval('showPassage()',100);
-
-            const camerafunc = setInterval(() =>{
-              send_img_temp();
-              console.log(stop_flag);
-              if(stop_flag){
-                clearInterval(camerafunc);
-            }}, 500);
-            // var camerafunc = setInterval(send_img_temp, 1000);
+            
+            
           }
         }
       }
-
-      var mis_look = 0;
-      function send_img_temp() {
-        fd.set("type", "temp");
-        fd.set("user", userName);
-        $.ajax({
-          url: '{% url "login_app:get_data" %}',
-          type: "POST",
-          data: fd,
-          processData: false,
-          contentType: false,
-          dataType: "json",
-        }).done(function (data) {
-          console.log(data)
-          if(data["result"] == 1){
-            mis_look++;
-            if(mis_look >= 2){
-              hp_max = hpDown(hp_max,hp);
-              mis_look = 0;
-              if(hp_max == 0){//体力0になったら終わり
-                deadEnd()
-              }
-            }
-          }else{
-            mis_look = 0;
-          }
-        });
-      }
-
-
-      function send_finish() {
-        $.ajax({
-          url: '{% url "login_app:get_data" %}',
-          type: "POST",
-          data: {type: "finish", user: userName},
-          dataType: "json",
-        }).done(function (data) {
-          console.log(data);
-        });
-      }
-
-
-
-
-
-
   
       // ここからはfunction群
 
@@ -356,17 +292,13 @@
       }
 
       function deadEnd(){//HPが尽きたら
-        stop_flag = true;
-        // clearInterval( camerafunc);
-        // clearInterval( camerafunc);
+        //clearInterval( camerafunc);
         clearInterval( PassageID );   // タイマーを止める
         deadFlag = 1; //game overフラグを上げる
         $('#fullOverlay').css({ //game over画面の出力
           'display': 'block',
           'z-index': 10
         });
-
-        setTimeout(send_finish, 3000)
       }
 
       function getScore(){ //スコア算出
@@ -385,7 +317,6 @@
       }
 
       function retryButton(){ //もう一度を選んだ場合の初期化処理
-        stop_flag = false
 
         Q_nums = [];
         for(let i=0; i < Q.length; i++) {
@@ -429,8 +360,6 @@
         document.getElementById("image5").src = hp_img.src;
 
         document.getElementById("timeArea").innerHTML = 0;   // 時間をリセット
-
-        mis_look = 0;
       }
 
       function link_origin(){
@@ -465,58 +394,58 @@
       }
 
       //カメラ起動
-      const cv = window.cv;
-      const video = document.getElementById("video");
-      navigator.mediaDevices
-       .getUserMedia({
-         video: true,
-         audio: false,
-       })
-       .then((stream) => {
-         video.srcObject = stream;
-         video.play();
-         setInterval(draw, 10);
-       })
-       .catch((e) => {
-         console.log(e);
-       });
+      //const cv = window.cv;
+      //const video = document.getElementById("video");
+      //navigator.mediaDevices
+      //  .getUserMedia({
+      //    video: true,
+      //    audio: false,
+      //  })
+      //  .then((stream) => {
+      //    video.srcObject = stream;
+      //    video.play();
+      //    setInterval(draw, 10);
+      //  })
+      //  .catch((e) => {
+      //    console.log(e);
+      //  });
 
-      const canvas = document.getElementById("canvas");
-      let image = document.getElementById("image");
+      //const canvas = document.getElementById("canvas");
+      //let image = document.getElementById("image");
 
-      canvas.width = 340;
-      canvas.height = 260;
-      console.log(video.clientWidth, video.clientHeight)
+      //canvas.width = 340;
+      //canvas.height = 260;
+      // console.log(video.clientWidth, video.clientHeight)
 
-      let fd = new FormData();
-      function draw() {
-       let ctx = canvas.getContext("2d");
-
-
-       ctx.drawImage(video, 150, 210, 340, 260, 0, 0, canvas.width, canvas.height);
+      //let fd = new FormData();
+      //function draw() {
+      //  let ctx = canvas.getContext("2d");
 
 
-
-       let mat = cv.imread("canvas");
-       cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0);
-       cv.imshow("canvas", mat);
-       mat.delete();
+      //  ctx.drawImage(video, 150, 210, 340, 260, 0, 0, canvas.width, canvas.height);
 
 
-       var base64 = canvas.toDataURL("image/jpeg", 1.0);
-       image.setAttribute("src", base64);
 
-       var bin = atob(base64.replace(/^.*,/, ""));
-       var buffer = new Uint8Array(bin.length);
-       for (var i = 0; i < bin.length; i++) {
-         buffer[i] = bin.charCodeAt(i);
-       }
-       var file = new File([buffer.buffer], "img.jpeg", {
-         type: "image/jpeg",
-       });
+      //  let mat = cv.imread("canvas");
+      //  cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0);
+      //  cv.imshow("canvas", mat);
+      //  mat.delete();
 
-       fd.set("img", file);
-      }
+
+      //  var base64 = canvas.toDataURL("image/jpeg", 1.0);
+      //  image.setAttribute("src", base64);
+
+      //  var bin = atob(base64.replace(/^.*,/, ""));
+      //  var buffer = new Uint8Array(bin.length);
+      //  for (var i = 0; i < bin.length; i++) {
+      //    buffer[i] = bin.charCodeAt(i);
+      //  }
+      //  var file = new File([buffer.buffer], "img.jpeg", {
+      //    type: "image/jpeg",
+      //  });
+
+      //  fd.set("img", file);
+      //}  
 
       </script>
 

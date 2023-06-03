@@ -1,32 +1,18 @@
 {% load static %}
-{% load widget_tweaks %}
 <!doctype html>
 <html lang="ja">
-    <head>
-        <meta charset="utf-8">
-        <title>ログイン</title>
-        <meta name="description" content="Hackathon_MML">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    </head>
-    <body>
-        <header>
-            <h1>Geek Touch Typer</h1>
-        </header>
-        <img src="static/img/mitechan_clear.png" alt="ニコニコ見てちゃん" class="mite">
-        <div class="box-container">
-            <div class="box">
-                <h2>ログイン</h2>
-                <form action="{% url 'login_app:login'%}" method="post">
-                {% csrf_token %}
-                    <p>{{ form.username|add_class:'username' }}</p>
-                    <p>{{ form.password|add_class:'password' }}</p>
-                    <p><input type="hidden" name="next" value="{{next}}"></p>
-                    <p><input class="button" type="submit" value="ログイン"></p>
-                </form>
-                <div id="description">アカウントがない人はこちら：<a href="{% url 'login_app:signup'%}">新規登録</a></div>
-        </div>
-        <footer>
-            <p>Produced by MML</p>
-        </footer>
-    </body>
+<head>
+    <meta charset="utf-8">
+    <title>ログイン</title>
+</head>
+<body>
+    <h1>ログイン</h1>
+    <form action="{% url 'login_app:login'%}" method="post">
+    {% csrf_token %}
+        {{ form.as_p }}
+        <p><input type="hidden" name="next" value="{{next}}"></p>
+        <p><input type="submit" value="ログイン"></p>
+    </form>
+    <p><a href="{% url 'login_app:signup'%}">ユーザー登録</a></p>
+</body>
 </html>

@@ -7,58 +7,12 @@ from django.http import JsonResponse
 from .models import ScoreData
 from django.views.decorators.csrf import csrf_protect
 
-import os
-import shutil
-import cv2
-
-import torch
-import torch.nn as nn
-from torchvision import transforms
-import torch.utils.data as data
-
-
-import login_app.cnn as cnn
-import login_app.data_prep as data_prep
-import login_app.train as train
-
-
-
-transform = transforms.Compose([transforms.ToTensor()])
-
-softmax = nn.Softmax(dim=1)
-threshold = 0.4
-
-cnn_dict = {}
-cnt_dict = {}
-
-
-
-
-
-
-class RealtimeDataset(data.Dataset):
-    def __init__(self, img, transform):
-        self.img = img
-        self.transform = transform
-
-    def __len__(self):
-        return 1
-
-    def __getitem__(self, index):
-        return self.transform(self.img)
-
-
-
-
-
-
-
-
 def index(req):
     return render(req, 'login_app/index.html')
 
 def signup_view(request):
     if request.method == 'POST':
+
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
@@ -68,6 +22,8 @@ def signup_view(request):
             param = {
                 'users':user
             }
+            # return redirect(to='/user/')
+            # return render (request,'login_app/title.html?name='+user,param)
             return redirect('login_app:title')
 
     else:
@@ -76,6 +32,7 @@ def signup_view(request):
     param = {
         'form': form
     }
+
     return render(request, 'login_app/signup.html', param)
 
 def title(request):
@@ -114,6 +71,8 @@ def login_view(request):
                     param = {
                         'user':user
                     }
+                    # return redirect(to='/user/')
+                    # return render (request,'login_app/title.html',param)
                     return redirect('login_app:title')
                 else:
                     return redirect(to=next)
@@ -149,7 +108,7 @@ def save_data(request):
 def logout_view(request):
     logout(request)
 
-    return render(request, 'login_app/index.html')
+    return render(request, 'login_app/logout.html')
 
 @login_required
 def user_view(request):
@@ -180,107 +139,51 @@ def move_ranking(request):
     raking_datas = ScoreData.objects.all()
     return render(request, 'login_app/ranking.html',{'ranking_list':raking_datas})
 
+cnt_0 = 0
+cnt_1 = 0
 
 
+# @csrf_protect
+# def get_data(request):
+#     global cnt_0, cnt_1
+#     dtype = request.POST.get('type')
+#     file = request.FILES['img']
 
 
+#     if dtype == 'temp':
+#         file_name = 'login_app/img/temp/image.jpg'
+#         with open(file_name, 'wb+') as f:
+#             for chunk in file.chunks():
+#                 f.write(chunk)
+#         # img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
+#         # landmark = detect_landmark(img)
+#         # if landmark is None:
+#         #     d = {'result': 2}
+#         # else:
+#         #     test_img0 = transform(Image.open('touchtyperman/img/faces/image0.jpg').convert('L'))
+#         #     test_img1 = transform(Image.open('touchtyperman/img/faces/image1.jpg').convert('L'))
+#         #     # test_img2 = transform(Image.open('touchtyperman/img/faces/image2.jpg').convert('L'))
+#         #     face_img = draw(landmark, img)
+#         #     cos0 = cos(torch.flatten(face_img), torch.flatten(test_img0)).item()
+#         #     cos1 = cos(torch.flatten(face_img), torch.flatten(test_img1)).item()
+#         #     # cos2 = cos(torch.flatten(face_img), torch.flatten(test_img2)).item()
+#         #     if cos0 > cos1 + 0.003:
+#         #         d = {'result': 0, 'cos0': cos0, 'cos1': cos1}
+#         #     else:
+#         #         d = {'result': 1, 'cos0': cos0, 'cos1': cos1}
+#         d = {'success': True}
+#         return JsonResponse(d)
 
-
-def get_data(request):
-    global cnn_dict, cnt_dict
-    dtype = request.POST.get('type')
-    # print(dtype)
-    user = request.POST.get('user')
-    if 'img' in request.FILES:
-        file = request.FILES['img']
-    batch_size = 1
-
-    if dtype == 'temp':
-        net = cnn_dict[user]
-        file_name = f'login_app/img/{user}/temp/image.jpg'
-        with open(file_name, 'wb+') as f:
-            for chunk in file.chunks():
-                f.write(chunk)
-        img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
-        landmark = data_prep.detect_landmark(img)
-        if landmark is None:
-            d = {'result': 2}
-        else:
-            with torch.no_grad():
-                eye_img = data_prep.eye_crop(img, landmark)
-                dataset = RealtimeDataset(eye_img, transform)
-                dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size)
-                temp_img = dataloader.__iter__()
-                input_img = next(temp_img)
-                output_net = net(input_img)
-                output_softmax = softmax(output_net).squeeze().tolist()
-                print(output_softmax)
-                if output_softmax[1] > threshold:
-                    d = {'result': 1}
-                else:
-                    d = {'result': 0}
-        return JsonResponse(d)
-
-
-    elif dtype == 'finish':
-        file_name = f'login_app/img/{user}/temp/image.jpg'
-        if os.path.exists(file_name):
-            os.remove(file_name)
-        d = {'success': True}
-        return JsonResponse(d)
-
-
-    elif dtype == 'training':
-        if user not in cnn_dict:
-            d = {'success': False}
-            return JsonResponse(d)
-        else:
-            net = cnn_dict[user]
-
-        train_file_list = data_prep.make_filepath_list(user)
-        # print(train_file_list)
-
-        train_dataset = data_prep.EyeDataset(file_list=train_file_list, transform=transform)
-
-        batch_size = 4
-
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
-
-        max_epoch = 50
-        finetune = train.Train(net, train_loader)
-        finetune.training(max_epoch)
-
-        d = {'success': True}
-        shutil.rmtree(f'login_app/img/{user}/')
-        os.makedirs(f'login_app/img/{user}/temp/', exist_ok=True)
-        os.makedirs(f'login_app/img/{user}/train/0/', exist_ok=True)
-        os.makedirs(f'login_app/img/{user}/train/1/', exist_ok=True)
-        os.makedirs(f'login_app/img/{user}/train/2/', exist_ok=True)
-        return JsonResponse(d)
-
-
-    else:
-        if user not in cnn_dict:
-            cnn_dict[user] = cnn.CNN()
-        if user not in cnt_dict:
-            cnt_dict[user] = [0, 0, 0]
-        if not os.path.isdir(f'login_app/img/{user}/'):
-            os.makedirs(f'login_app/img/{user}/temp/', exist_ok=True)
-            os.makedirs(f'login_app/img/{user}/train/0/', exist_ok=True)
-            os.makedirs(f'login_app/img/{user}/train/1/', exist_ok=True)
-            os.makedirs(f'login_app/img/{user}/train/2/', exist_ok=True)
-        if dtype == 'train-0':
-            file_name = f'login_app/img/{user}/train/0/image_{cnt_dict[user][0]:05}.jpg'
-            cnt_dict[user][0] += 1
-        elif dtype == 'train-1':
-            file_name = f'login_app/img/{user}/train/1/image_{cnt_dict[user][1]:05}.jpg'
-            cnt_dict[user][1] += 1
-        elif dtype == 'train-2':
-            file_name = f'login_app/img/{user}/train/2/image_{cnt_dict[user][2]:05}.jpg'
-            cnt_dict[user][2] += 1
-        with open(file_name, 'wb+') as f:
-            for chunk in file.chunks():
-                f.write(chunk)
-        d = {'success': True}
-        return JsonResponse(d)
-
+#     else:
+#         if dtype == 'face-0':
+#             file_name = f'touchtyperman/img/train/0/image_{cnt_0:05}.jpg'
+#             cnt_0 += 1
+#         else:
+#             file_name = f'touchtyperman/img/train/1/image_{cnt_1:05}.jpg'
+#             cnt_1 += 1
+#         with open(file_name, 'wb+') as f:
+#             for chunk in file.chunks():
+#                 f.write(chunk)
+#         d = {'success': True}
+#         # print(cnt)
+#         return JsonResponse(d)

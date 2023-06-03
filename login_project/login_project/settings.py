@@ -33,7 +33,6 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'login_app', # 追記
-    'widget_tweaks', # 追記
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
