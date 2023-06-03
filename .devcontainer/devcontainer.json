@@ -1,9 +1,0 @@
-{
-	"name": "Python:3.7.12",
-	// Dockerfileでイメージ・コンテナを作成
-	"dockerFile": "Dockerfile",
-	// リモート先のVS Codeにインストールする拡張機能
-	"extensions": [
-		"ms-python.python"
-	]
-}
