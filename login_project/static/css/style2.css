@@ -129,3 +129,7 @@ li{
   position: absolute;
   left: 62.5%; top: 70%;  
 }
+
+.display-none{
+  display:none;
+}

@@ -121,6 +121,8 @@ def get_data(request):
         file_name = f'touchtyperman/img/{user}/temp/image.jpg'
         if os.path.exists(file_name):
             os.remove(file_name)
+        d = {'success': True}
+        return JsonResponse(d)
 
 
     elif dtype == 'finetuning':

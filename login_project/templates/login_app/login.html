@@ -3,29 +3,16 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
-        <title>ログイン</title>
-        <meta name="description" content="Hackathon_MML">
-        <link rel="stylesheet" href="{% static 'css/style3.css' %}">
+    <title>ログイン</title>
 </head>
-    <body>
-        <header>
-            <h1>目指せ！タッチタイパーマン！</h1>
-        </header>
-        <main>
-            <h2>ログイン</h2>
-            <form action="{% url 'login_app:login'%}" method="post">
-            {% csrf_token %}
-                {{ form.as_p }}
-                <p><input type="hidden" name="next" value="{{next}}"></p>
-                <p><input type="submit" value="ログイン"></p>
-            </form>
-            <p>
-                ユーザ登録がまだの人はこちら：
-                <a href="{% url 'login_app:signup'%}">ユーザー登録</a>
-            </p>
-        </main>
-        <footer>
-            <p>Created by MML</p>
-        </footer>
-    </body>
+<body>
+    <h1>ログイン</h1>
+    <form action="{% url 'login_app:login'%}" method="post">
+    {% csrf_token %}
+        {{ form.as_p }}
+        <p><input type="hidden" name="next" value="{{next}}"></p>
+        <p><input type="submit" value="ログイン"></p>
+    </form>
+    <p><a href="{% url 'login_app:signup'%}">ユーザー登録</a></p>
+</body>
 </html>
