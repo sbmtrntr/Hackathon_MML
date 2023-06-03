@@ -1,31 +1,33 @@
-<!-- {% load static %} -->
 <!DOCTYPE html>
-<html lang="ja">
-    <head>
-        <meta charset="utf-8">
-        <title>目指せ！タッチタイパーマン！（仮）</title>
-        <meta name="description" content="Hackathon_MML">
-        <!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
-    </head>
-    <body>
-        <div class="container">
-            <h1>目指せ！タッチタイパーマン！（仮）</h1>
-            <div id="start-screen">
-                <input class = "button" type="button" onclick="link1()" value="ログイン">
-                {% comment %} <input class = "button" type="button" value="ログイン"> {% endcomment %}
-                <input class = "button" type="button" onclick="link2()" value="新規登録">
-            </div>
-        </div>
-        <script>
-         function link1()
-         {
-            location.href ="{% url 'login_app:login' %}";
-         }
-         function link2()
-         {
-            location.href ="{% url 'login_app:signup' %}";
-         }
+{% load static %}
+<html lang="ja" dir="ltr">
+<head>
+<meta charset="utf-8">
+<title></title>
+<link rel="stylesheet" href='{% static "App_Folder_css/style.css" %}'/>
 
-        </script>
-    </body>
+</head>
+<body>
+<h1>ログイン画面</h1>
+
+<div class="reg">
+  <form method="post" action="{% url 'Login' %}">
+    {% csrf_token %}
+
+    <table class="reg_form">
+    <tr>
+    <td><label for="userid">ユーザーID:</label></td>
+    <td><input type="text" name="userid"></td>
+    <td><label for="password">パスワード：</label></td>
+    <td><input type="password" name="password"></td>
+    </tr>
+    </table>
+
+    <input type="submit" class="btn" value="Login">
+ </form>
+</div>
+   <p class="message">アカウントをお持ちですか？：
+   <a href="{% url 'register' %}">アカウントを作成</a>
+   </p>
+</body>
 </html>
