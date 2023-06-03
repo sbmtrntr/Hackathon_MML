@@ -4,9 +4,8 @@ from django.urls import path
 app_name = 'login_app'
 
 urlpatterns = [
-    path(r'', views.index, name='index'),
+    path('', views.index, name='index'),
     path('signup', views.signup_view, name='signup'),
-    # path('login/', views.login_view, name='login'),
     path('title/', views.title, name='title'),
     path('title2/', views.title2, name='title2'),
     path('login', views.login_view, name='login'),

@@ -59,7 +59,6 @@ def index(req):
 
 def signup_view(request):
     if request.method == 'POST':
-
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
@@ -69,8 +68,6 @@ def signup_view(request):
             param = {
                 'users':user
             }
-            # return redirect(to='/user/')
-            # return render (request,'login_app/title.html?name='+user,param)
             return redirect('login_app:title')
 
     else:
@@ -79,7 +76,6 @@ def signup_view(request):
     param = {
         'form': form
     }
-
     return render(request, 'login_app/signup.html', param)
 
 def title(request):
@@ -118,8 +114,6 @@ def login_view(request):
                     param = {
                         'user':user
                     }
-                    # return redirect(to='/user/')
-                    # return render (request,'login_app/title.html',param)
                     return redirect('login_app:title')
                 else:
                     return redirect(to=next)
@@ -155,7 +149,7 @@ def save_data(request):
 def logout_view(request):
     logout(request)
 
-    return render(request, 'login_app/logout.html')
+    return render(request, 'login_app/index.html')
 
 @login_required
 def user_view(request):

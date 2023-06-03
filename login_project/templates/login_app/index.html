@@ -3,29 +3,40 @@
 <html lang="ja">
     <head>
         <meta charset="utf-8">
-        <title>目指せ！タッチタイパーマン！（仮）</title>
+        <title>Geek Touch Typer</title>
         <meta name="description" content="Hackathon_MML">
         <!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
     </head>
     <body>
-        <div class="container">
-            <h1>目指せ！タッチタイパーマン！（仮）</h1>
-            <div id="start-screen">
-                <input class = "button" type="button" onclick="link1()" value="ログイン">
-                {% comment %} <input class = "button" type="button" value="ログイン"> {% endcomment %}
+        <header>
+            <h1>Geek Touch Typer</h1>
+        </header>
+        <img src="static/img/mitechan_clear.png" alt="ニコニコ見てちゃん" class="mite">
+        <div class="box-container">
+            <div class="box">
+                <div class="description">
+                    <p>既にユーザー登録済みの人はこちら</p>
+                </div>
+                <input class="button" type="button" onclick="link1()" value="ログイン">
+                <div class="separator"></div>
+                <div class="description">
+                    <p>まだユーザー登録をしていない人はこちら</p>
+                </div>
                 <input class = "button" type="button" onclick="link2()" value="新規登録">
             </div>
         </div>
-        <script>
-         function link1()
-         {
-            location.href ="{% url 'login_app:login' %}";
-         }
-         function link2()
-         {
-            location.href ="{% url 'login_app:signup' %}";
-         }
-
-        </script>
+        <footer>
+            <p>Produced by MML</p>
+        </footer>
     </body>
+    <script>
+        function link1()
+        {
+        location.href ="{% url 'login_app:login' %}";
+        }
+        function link2()
+        {
+        location.href ="{% url 'login_app:signup' %}";
+        }
+    </script>
 </html>
