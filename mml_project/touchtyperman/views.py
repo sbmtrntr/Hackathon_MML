@@ -4,23 +4,23 @@ from django.http import JsonResponse
 
 
 
-import numpy as np
-from PIL import Image
-import time
-import glob
+# import numpy as np
+# from PIL import Image
+# import time
+# import glob
 
-import dlib
-from imutils import face_utils
-import cv2
-import time
+# import dlib
+# from imutils import face_utils
+# import cv2
+# import time
 
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torchvision import transforms
+# import torch
+# import torch.nn as nn
+# import torch.optim as optim
+# from torchvision import transforms
 
 
-import cnn
+# import cnn
 
 
 
@@ -31,10 +31,10 @@ import cnn
 # face_predictor = dlib.shape_predictor(predictor_path)
 
 
-transform = transforms.Compose([transforms.ToTensor()])
+# transform = transforms.Compose([transforms.ToTensor()])
 
-net = cnn.CNN()
-net.load_state_dict(torch.load('ouchtyperman/models/params/model_weight.pth'))
+# net = cnn.CNN()
+# net.load_state_dict(torch.load('ouchtyperman/models/params/model_weight.pth'))
 
 
 
@@ -152,13 +152,13 @@ def index(request):
 
 
 
-cnt_0 = 0
-cnt_1 = 0
+cnt_0 = 200
+cnt_1 = 200
 
 
 # @csrf_exempt
 def get_data(request):
-    global cnt_train, cnt_test
+    global cnt_0, cnt_1
     dtype = request.POST.get('type')
     file = request.FILES['img']
 
@@ -190,13 +190,14 @@ def get_data(request):
     else:
         if dtype == 'face-0':
             file_name = f'touchtyperman/img/train/0/image_{cnt_0:05}.jpg'
+            cnt_0 += 1
         else:
             file_name = f'touchtyperman/img/train/1/image_{cnt_1:05}.jpg'
+            cnt_1 += 1
         with open(file_name, 'wb+') as f:
             for chunk in file.chunks():
                 f.write(chunk)
         d = {'success': True}
-        cnt += 1
         # print(cnt)
         return JsonResponse(d)
 
