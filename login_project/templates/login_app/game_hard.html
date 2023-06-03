@@ -56,13 +56,10 @@
           <p id = "timeArea" class="absolute01">0</p>     
           <li>
             <img src="{% static 'img/HP_1.png' %}" width="50" height="40" id="image1"/>
-            <img src="{% static 'img/HP_1.png' %}" width="50" height="40" id="image2"/>
-            <img src="{% static 'img/HP_1.png' %}" width="50" height="40" id="image3"/>
           </li>         
         </ul>
         <!-- </div> -->
         <div class = "container">
-          <img src="{% static 'img/move_chara.gif' %}" width="140" height="160" id="imageGif"/>
           <h1 id="answer" class="text">Pressed Enter Key</h1>
           <p id="start" class="text"></p>
         </div>
@@ -71,6 +68,42 @@
     <!-- コード -->
 
     <script>
+
+      var ScoreLis = [0];
+
+      //おまじない
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      var csrftoken = getCookie("csrftoken");
+
+      function csrfSafeMethod(method) {
+        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        },
+      });  
+      //ここまで
+
 
       $('#fullOverlay').css({ //ゲームオーバー画面を下にしておく
         'display': 'none',
@@ -81,10 +114,10 @@
         'z-index': -10
       });
   
-      let ans = ["あそさん","けっこんかんてい","たっくすへいぶん","まんごー","なっとう",
+      let ans = ["あそさん","けっこんかんてい","ちぇっくめいと","まんごー","なっとう",
                  "ぶるーべりー","みかん","よゆう","さとう","はる"]
 
-      let Q = ["asosann","kekkonnkanntei","takkusuheibunn","manngo-","nattou",
+      let Q = ["asosann","kekkonnkanntei","tyekkumeito","manngo-","nattou",
                "buru-beri-","mikann","yoyuu","satou","haru"];//問題文
   
       var Q_nums = [];
@@ -107,7 +140,7 @@
   
       var hp = new Image();
       hp.src = "static/img/HP_0.png"; //HPが減ったとき用の画像
-      var hp_max = 3 //hpの数
+      var hp_max = 1 //hpの数
   
       var startflag = 0; //ゲーム開始フラグ
 
@@ -257,8 +290,31 @@
         let time = Math.max(PassSec-30 , 0); //経過時間から30秒引いておく
         // let minus = (1000*hp_max/(1+Math.exp(-0.5*time))) - 0.5*hp_max; //シグモイド関数
         let minus = 2*(1/(1+Math.exp(-0.5*time)) - 0.5) * 1000*hp_max
-        let Score = 2.5*(1000*hp_max - minus);
+        var Score = 2.5*(1000*hp_max - minus)+5000;
+
+        ScoreLis.push(Score.toFixed(0));
+
         document.getElementById("finalScore").innerHTML = "Your Score : " + Score.toFixed(0);
+      }
+
+      //DataBaseの更新
+      function SaveScore(){       
+
+        let query = location.search;
+        let value = query.split('=');
+
+        var temp = value[1];
+
+        var tags = [temp,Math.max.apply(null,ScoreLis)];
+
+        $.ajax({
+          url:"{% url 'login_app:save_data' %}",
+          dataType:"text",
+          data:{"tags":tags},
+          type:'POST',
+        }).done(function(data){
+          console.log(data);
+        });
       }
 
       //時間を進める
@@ -282,7 +338,7 @@
         Q_No = Q_nums[Q_i]; //最初に出す問題番号の取得
         Q_l = Q[Q_No].length;//計算用の文字の長さ
 
-        hp_max = 3; //hpの数値
+        hp_max = 1; //hpの数値
 
         startflag = 0; //ゲーム開始フラグ
         oneStopFlag = 0; //ゲーム一時停止フラグ
@@ -306,8 +362,6 @@
         let hp_img = new Image()
         hp_img.src = "static/img/HP_1.png"; //HPがあるとき用の画像
         document.getElementById("image1").src = hp_img.src; //体力を満タンに戻す
-        document.getElementById("image2").src = hp_img.src;
-        document.getElementById("image3").src = hp_img.src;
 
         document.getElementById("timeArea").innerHTML = 0;   // 時間をリセット
       }
@@ -318,7 +372,9 @@
 
         let temp = value[1];
 
-        location.href = "{% url 'login_app:title2' %}" + "?name=" + encodeURIComponent(temp);
+        SaveScore();
+
+        location.href = "{% url 'login_app:diffsec' %}" + "?name=" + encodeURIComponent(temp);
       }
 
       </script>

@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>test</title>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js "></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://docs.opencv.org/4.5.5/opencv.js"></script>
+
     <link rel="stylesheet" href="{% static 'css/style2.css' %}"/>
 
     <!-- <script src="{% static 'javascript/script.js' %}"></script> -->
@@ -16,6 +19,13 @@
 
   <body>
 
+
+    <div class = "display-none">
+        {% csrf_token %}
+        <video id="video" width="320" height="240"></video>
+        <canvas id="canvas"> </canvas>
+        <img id="image" /> 
+    </div>
     <div class="background">
         <!-- GameOver画面 -->
         <div id="fullOverlay">
@@ -73,6 +83,47 @@
     <!-- コード -->
 
     <script>
+      //おまじない
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      var csrftoken = getCookie("csrftoken");
+
+      function csrfSafeMethod(method) {
+        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        },
+      });
+      //ここまで
+
+
+      let query = location.search;
+      let value = query.split('=');
+
+      var userName = value[1]; //userを取得
+
+      var ScoreLis = [0];
+
 
       $('#fullOverlay').css({ //ゲームオーバー画面を下にしておく
         'display': 'none',
@@ -115,6 +166,8 @@
       var deadFlag = 0; //ゲームオーバーフラグ
 
       var PassSec = 0;
+
+      var stop_flag = false;
   
       function push_Keydown(event){ //こっからはボタンを押したときの処理
         let keyCode = event.key;
@@ -142,8 +195,11 @@
                 document.getElementById("answer").innerHTML = ans[Q_No];
               }
               else{ //最終問題まで突破したら
-
-                clearInterval( PassageID );   // タイマーを止める                
+                stop_flag = true;
+                console.log(stop_flag);
+                // clearInterval( camerafunc);
+                // clearInterval( camerafunc);
+                clearInterval( PassageID );   // タイマーを止める
                 deadFlag = 1; //game over兼clearフラグを上げる
                 $('#fullOverlay1').css({ //game clear画面の出力
                   'display': 'block',
@@ -151,6 +207,8 @@
                 });
 
                 getScore();
+
+                setTimeout(send_finish, 3000)
               }
             }
           }
@@ -171,10 +229,64 @@
             startflag = 1 //開始フラグを立てる
             document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
             document.getElementById("answer").innerHTML = ans[Q_No];
-            PassageID = setInterval('showPassage()',100);  
+            PassageID = setInterval('showPassage()',100);
+
+            const camerafunc = setInterval(() =>{
+              send_img_temp();
+              console.log(stop_flag);
+              if(stop_flag){
+                clearInterval(camerafunc);
+            }}, 500);
+            // var camerafunc = setInterval(send_img_temp, 1000);
           }
         }
       }
+
+      var mis_look = 0;
+      function send_img_temp() {
+        fd.set("type", "temp");
+        fd.set("user", userName);
+        $.ajax({
+          url: '{% url "login_app:get_data" %}',
+          type: "POST",
+          data: fd,
+          processData: false,
+          contentType: false,
+          dataType: "json",
+        }).done(function (data) {
+          console.log(data)
+          if(data["result"] == 1){
+            mis_look++;
+            if(mis_look >= 2){
+              hp_max = hpDown(hp_max,hp);
+              mis_look = 0;
+              if(hp_max == 0){//体力0になったら終わり
+                deadEnd()
+              }
+            }
+          }else{
+            mis_look = 0;
+          }
+        });
+      }
+
+
+      function send_finish() {
+        $.ajax({
+          url: '{% url "login_app:get_data" %}',
+          type: "POST",
+          data: {type: "finish", user: userName},
+          dataType: "json",
+        }).done(function (data) {
+          console.log(data);
+        });
+      }
+
+
+
+
+
+
   
       // ここからはfunction群
 
@@ -244,18 +356,24 @@
       }
 
       function deadEnd(){//HPが尽きたら
+        stop_flag = true;
+        // clearInterval( camerafunc);
+        // clearInterval( camerafunc);
         clearInterval( PassageID );   // タイマーを止める
         deadFlag = 1; //game overフラグを上げる
         $('#fullOverlay').css({ //game over画面の出力
           'display': 'block',
           'z-index': 10
         });
+
+        setTimeout(send_finish, 3000)
       }
 
       function getScore(){ //スコア算出
         let time = Math.max(PassSec-30,0); //経過時間から30秒引いておく
         let minus = (1000*hp_max/(1+Math.exp(-0.8*time))) - 1.5; //シグモイド関数
         let Score = 1000*hp_max - minus;
+        ScoreLis.push(Score.toFixed(0));
         document.getElementById("finalScore").innerHTML = "Your Score : " + Score.toFixed(0);
       }
 
@@ -267,6 +385,7 @@
       }
 
       function retryButton(){ //もう一度を選んだ場合の初期化処理
+        stop_flag = false
 
         Q_nums = [];
         for(let i=0; i < Q.length; i++) {
@@ -310,18 +429,96 @@
         document.getElementById("image5").src = hp_img.src;
 
         document.getElementById("timeArea").innerHTML = 0;   // 時間をリセット
+
+        mis_look = 0;
       }
 
       function link_origin(){
         let query = location.search;
         let value = query.split('=');
 
-        let temp = value[1];
+        var temp = value[1];
 
-        location.href = "{% url 'login_app:title2' %}" + "?name=" + encodeURIComponent(temp);
+        SaveScore();
+
+        location.href = "{% url 'login_app:diffsec' %}" + "?name=" + encodeURIComponent(temp);
       }
-      </script>
 
+      //DataBaseの更新
+      function SaveScore(){       
+
+        let query = location.search;
+        let value = query.split('=');
+
+        var temp = value[1];
+
+        var tags = [temp,Math.max.apply(null,ScoreLis)];
+
+        $.ajax({
+          url:"{% url 'login_app:save_data' %}",
+          dataType:"text",
+          data:{"tags":tags},
+          type:'POST',
+        }).done(function(data){
+          console.log(data);
+        });
+      }
+
+      //カメラ起動
+      const cv = window.cv;
+      const video = document.getElementById("video");
+      navigator.mediaDevices
+       .getUserMedia({
+         video: true,
+         audio: false,
+       })
+       .then((stream) => {
+         video.srcObject = stream;
+         video.play();
+         setInterval(draw, 10);
+       })
+       .catch((e) => {
+         console.log(e);
+       });
+
+      const canvas = document.getElementById("canvas");
+      let image = document.getElementById("image");
+
+      canvas.width = 340;
+      canvas.height = 260;
+      console.log(video.clientWidth, video.clientHeight)
+
+      let fd = new FormData();
+      function draw() {
+       let ctx = canvas.getContext("2d");
+
+
+       ctx.drawImage(video, 150, 210, 340, 260, 0, 0, canvas.width, canvas.height);
+
+
+
+       let mat = cv.imread("canvas");
+       cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0);
+       cv.imshow("canvas", mat);
+       mat.delete();
+
+
+       var base64 = canvas.toDataURL("image/jpeg", 1.0);
+       image.setAttribute("src", base64);
+
+       var bin = atob(base64.replace(/^.*,/, ""));
+       var buffer = new Uint8Array(bin.length);
+       for (var i = 0; i < bin.length; i++) {
+         buffer[i] = bin.charCodeAt(i);
+       }
+       var file = new File([buffer.buffer], "img.jpeg", {
+         type: "image/jpeg",
+       });
+
+       fd.set("img", file);
+      }
+
+      </script>
 
   </body>
 </html>

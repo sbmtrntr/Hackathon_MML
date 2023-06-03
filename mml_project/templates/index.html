@@ -1,0 +1,245 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WEBカメラの映像を表示</title>
+    <link rel = "stylesheet" href="{% static 'css/style.css' %}"></link>
+  </head>
+  <body>
+    <div>
+      {% csrf_token %}
+      <h1>WEBカメラの映像を表示</h1>
+      <div>
+        <video id="video" width="320" height="240" autoplay></video>
+      </div>
+      <div>
+        <canvas id="canvas"> </canvas>
+        <img id="image"> </img>
+      </div>
+      <div>
+        <button type="button" id="button1">スタート</button>
+        <button type="button" id="button2">画像送信</button>
+        <button type="button" id="button3">調整</button>
+      </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://docs.opencv.org/4.5.5/opencv.js"></script>
+
+    <script>
+      const cv = window.cv;
+
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      var csrftoken = getCookie("csrftoken");
+
+      function csrfSafeMethod(method) {
+        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        },
+      });
+
+
+
+
+
+
+
+
+
+
+      $("#button1").on("click", function (e) {
+        // e.preventDefault();
+        fd.set("type", "temp");
+        fd.set("user", "test");
+        setInterval(function(){
+          const startTime = Date.now();
+          $.ajax({
+            url: '{% url "touchtyperman:get_data" %}',
+            type: "POST",
+            data: fd,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+          }).done(function (data) {
+            console.log(data);
+            console.log(Date.now() - startTime);
+          });
+        }, 1000);
+      });
+
+
+
+
+
+      let cnt;
+
+      function send_img_0() {
+        fd.set("type", "train-0");
+        $.ajax({
+          url: '{% url "touchtyperman:get_data" %}',
+          type: "POST",
+          data: fd,
+          processData: false,
+          contentType: false,
+          dataType: "json",
+        }).done(function (data) {
+          console.log(data);
+          cnt++;
+        });
+      }
+
+      $("#button2").on("click", function (e) {
+        if (document.getElementById("button2").disabled === false) {
+          document.getElementById("button2").setAttribute("disabled", true);
+        }
+        cnt = 0;
+        const intervalId = setInterval(() =>{
+        send_img_0();
+        if(cnt >= 5){
+          clearInterval(intervalId);
+          if (document.getElementById("button2").disabled === true) {
+            document.getElementById("button2").removeAttribute("disabled");
+          }
+        }}, 200);
+      });
+
+
+
+
+      function send_img_1() {
+        fd.set("type", "train-1");
+        $.ajax({
+          url: '{% url "touchtyperman:get_data" %}',
+          type: "POST",
+          data: fd,
+          processData: false,
+          contentType: false,
+          dataType: "json",
+        }).done(function (data) {
+          console.log(data);
+          cnt++;
+        });
+      }
+
+
+      document.addEventListener('keypress', keypress_ivent);
+      function keypress_ivent(e) {
+        cnt = 0;
+        const intervalId = setInterval(() =>{
+        send_img_1();
+        if(cnt >= 5){
+          clearInterval(intervalId);
+        }}, 200);
+      }
+
+
+
+
+      $("#button3").on("click", function (e) {
+        if (document.getElementById("button3").disabled === false) {
+          document.getElementById("button3").setAttribute("disabled", true);
+        }
+        $.ajax({
+          url: '{% url "touchtyperman:get_data" %}',
+          type: "POST",
+          data: {"type": "finetuning"},
+          dataType: "json"
+        }).done(function (data) {
+          console.log(data);
+          if (document.getElementById("button3").disabled === true) {
+            document.getElementById("button3").removeAttribute("disabled");
+          }
+        });
+      });
+
+
+
+
+
+
+
+
+      const video = document.getElementById("video");
+      navigator.mediaDevices
+        .getUserMedia({
+          video: true,
+          audio: false,
+        })
+        .then((stream) => {
+          video.srcObject = stream;
+          video.play();
+          setInterval(draw, 10);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+
+      const canvas = document.getElementById("canvas");
+      let image = document.getElementById("image");
+
+      canvas.width = 340;
+      canvas.height = 260;
+      // console.log(video.clientWidth, video.clientHeight)
+
+      let fd = new FormData();
+      function draw() {
+        let ctx = canvas.getContext("2d");
+
+
+        ctx.drawImage(video, 150, 210, 340, 260, 0, 0, canvas.width, canvas.height);
+
+
+
+        let mat = cv.imread("canvas");
+        cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0);
+        cv.imshow("canvas", mat);
+        mat.delete();
+
+
+        var base64 = canvas.toDataURL("image/jpeg", 1.0);
+        image.setAttribute("src", base64);
+
+        var bin = atob(base64.replace(/^.*,/, ""));
+        var buffer = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) {
+          buffer[i] = bin.charCodeAt(i);
+        }
+        var file = new File([buffer.buffer], "img.jpeg", {
+          type: "image/jpeg",
+        });
+
+        fd.set("img", file);
+        // console.log(fd)
+        // for (let v of fd.entries()) {
+        //   console.log(v);
+        // }
+      }
+
+      // setTimeout(draw, 10000);
+    </script>
+  </body>
+</html>

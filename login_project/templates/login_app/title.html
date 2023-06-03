@@ -20,6 +20,7 @@
                 {% comment %} <input class = "button" type="button" onclick="link1()" value="プレイ"> {% endcomment %}
                 <input class = "button" type="button" onclick="link1()" value="プレイ">
                 <input class = "button" type="button" onclick="link2()" value="遊び方">
+                <input class = "button" type="button" onclick="ranking()" value="ランキング">
             </div>
         </div>
         <!----- /main ----->
@@ -29,13 +30,17 @@
         <script>
             function link1()
             {
-                console.log("{{user.username}}")
                 let temp = "{{user.username}}"
-                location.href ="{% url 'login_app:diffsec' %}" + "?name=" + encodeURIComponent(temp);
+                location.href ="{% url 'login_app:fineTuning' %}" + "?name=" + encodeURIComponent(temp);
             }
             function link2()
             { 
                 location.href ="{% url 'login_app:howToPlay' %}";
+            }
+            function ranking()
+            {
+                let temp = "{{user.username}}"
+                location.href ="{% url 'login_app:ranking' %}" + "?name=" + encodeURIComponent(temp);
             }
         </script>
 

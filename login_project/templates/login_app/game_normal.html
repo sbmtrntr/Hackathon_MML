@@ -1,0 +1,388 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>test</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js "></script>
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}"/>
+
+    <!-- <script src="{% static 'javascript/script.js' %}"></script> -->
+    <!--<script type="text/javascript" src="{% static 'script.js' %}"></script>-->
+    <!--<img src="{% static 'img/planeship/bocchi.png' %}" />-->
+
+  </head>
+
+  <body>
+
+    <div class="background">
+        <!-- GameOver画面 -->
+        <div id="fullOverlay">
+          <div class="text">
+            <h1>Game Over</h1>
+          </div>
+          <div class="botton1">
+            <input id = "retryButton" type="button" value="もう一度" 
+              style="width:200px;height:50px;font-size: 24px;" 
+              onclick="retryButton()">
+          </div>
+          <div class="botton2">
+            <input id = "GameEndButton" type="button" value="難易度選択に戻る" 
+            style="width:200px;height:50px;font-size: 24px;" onclick="link_origin()">
+          </div>
+        </div>
+
+        <!-- Game Clear画面 -->
+        <div id="fullOverlay1">
+          <div class="text">
+            <h1>Game Clear</h1>
+          </div>
+          <div class="score">
+            <h1 id="finalScore">Score</h1>
+          </div>
+          <div class="botton3">
+            <input id = "retryButton1" type="button" value="もう一度" 
+              style="width:200px;height:50px;font-size: 24px;" 
+              onclick="retryButton()">
+          </div>
+          <div class="botton4">
+            <input id = "GameEndButton1" type="button" value="難易度選択に戻る" 
+            style="width:200px;height:50px;font-size: 24px;" onclick="link_origin()">
+          </div>
+        </div>
+
+        <ul>
+          <p id = "timeArea" class="absolute01">0</p>     
+          <li>
+            <img src="{% static 'img/HP_1.png' %}" width="50" height="40" id="image1"/>
+            <img src="{% static 'img/HP_1.png' %}" width="50" height="40" id="image2"/>
+            <img src="{% static 'img/HP_1.png' %}" width="50" height="40" id="image3"/>
+          </li>         
+        </ul>
+        <!-- </div> -->
+        <div class = "container">
+          <img src="{% static 'img/move_chara.gif' %}" width="140" height="160" id="imageGif"/>
+          <h1 id="answer" class="text">Pressed Enter Key</h1>
+          <p id="start" class="text"></p>
+        </div>
+    </div>
+
+    <!-- コード -->
+
+    <script>
+
+      //おまじない
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      var csrftoken = getCookie("csrftoken");
+
+      function csrfSafeMethod(method) {
+        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        },
+      });  
+      //ここまで
+
+      $('#fullOverlay').css({ //ゲームオーバー画面を下にしておく
+        'display': 'none',
+        'z-index': -10
+      });
+      $('#fullOverlay1').css({ //ゲームクリア画面を下にしておく
+        'display': 'none',
+        'z-index': -10
+      });
+  
+      var ScoreLis = [0];
+
+      let ans = ["あそさん","けっこんかんてい","たっくすへいぶん","まんごー","なっとう",
+                 "ぶるーべりー","みかん","よゆう","さとう","はる"]
+
+      let Q = ["asosann","kekkonnkanntei","takkusuheibunn","manngo-","nattou",
+               "buru-beri-","mikann","yoyuu","satou","haru"];//問題文
+  
+      var Q_nums = [];
+      for(let i=0; i < Q.length; i++) {
+        Q_nums.push(i); //問題の出す順番の羅列
+      }
+  
+      for(let i=0; i < 5; i++){
+        arrayShuffle(Q_nums); //順番のシャッフル
+      }
+      let Q_char_i = 0;//回答初期値・現在単語どこまで合っているか判定している文字番号
+  
+      let Q_i = 0; //今何問目かを保存
+  
+      let Q_No = Q_nums[Q_i]; //最初に出す問題番号の取得
+  
+      let Q_l = Q[Q_No].length;//計算用の文字の長さ
+  
+      window.addEventListener("keydown", push_Keydown);//ボタンを押したら行う処理を登録
+  
+      var hp = new Image();
+      hp.src = "static/img/HP_0.png"; //HPが減ったとき用の画像
+      var hp_max = 3 //hpの数
+  
+      var startflag = 0; //ゲーム開始フラグ
+
+      let oneStopFlag = 0; //ゲーム一時停止フラグ
+
+      var deadFlag = 0; //ゲームオーバーフラグ
+
+      var PassSec = 0;
+  
+      function push_Keydown(event){ //こっからはボタンを押したときの処理
+        let keyCode = event.key;
+        console.log(keyCode)
+        if(startflag == 1 && deadFlag == 0){ //ゲームがスタートしていて、gameoverしてなかったら
+          if (Q_l == Q_l-Q_char_i){ //開始直後
+            document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
+            document.getElementById("answer").innerHTML = ans[Q_No];
+          }
+          if (Q[Q_No].charAt(Q_char_i) == keyCode) { //押したキーが合っていたら
+            Q_char_i++; //番号を一つ進める１足す
+  
+            //文字の色を変える
+            document.getElementById("start").innerHTML = '<span style="color:red;">'+Q[Q_No].substring(0, Q_char_i)+'</span>'+Q[Q_No].substring(Q_char_i, Q_l);
+          
+            if (Q_l == Q_char_i){ //全部の文字に正解したら
+              if (Q_i < Q.length-1){ //それが最終問題でなかったら
+                Q_i++; //次の問題番号のindexを取得
+                Q_No = Q_nums[Q_i]; //問題番号の取得
+                console.log(Q_i);
+                Q_l = Q[Q_No].length;//計算用の文字の長さ
+                Q_char_i = 0; //文字のインデックスの初期化
+              
+                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //新たな問題を書き出す
+                document.getElementById("answer").innerHTML = ans[Q_No];
+              }
+              else{ //最終問題まで突破したら
+
+                clearInterval( PassageID );   // タイマーを止める                
+                deadFlag = 1; //game over兼clearフラグを上げる
+                $('#fullOverlay1').css({ //game clear画面の出力
+                  'display': 'block',
+                  'z-index': 10
+                });
+
+                getScore();
+              }
+            }
+          }
+          else{ //キー入力を間違えたら
+            if(oneStopFlag == 0){
+              hp_max = hpDown(hp_max,hp) //hpを減らす
+              if(hp_max == 0){//体力0になったら終わり
+                deadEnd()
+              }
+              oneStopFlag = 1;
+              let stopperBreak = () => (oneStopFlag = 0)
+              setTimeout(stopperBreak, 1000)
+            }
+          }
+        }
+        else if(startflag == 0){ //ゲーム開始してなかったら
+          if (keyCode == "Enter"){
+            startflag = 1 //開始フラグを立てる
+            document.getElementById("start").innerHTML = Q[Q_No].substring(Q_char_i, Q_l); //問題を書き出す
+            document.getElementById("answer").innerHTML = ans[Q_No];
+            PassageID = setInterval('showPassage()',100);  
+          }
+        }
+      }
+  
+      // ここからはfunction群
+
+      function arrayShuffle(array) {
+        for(let i = (array.length - 1); 0 < i; i--){
+  
+          // 0〜(i+1)の範囲で値を取得
+          let r = Math.floor(Math.random() * (i + 1));
+  
+          // 要素の並び替えを実行
+          let tmp = array[i];
+          array[i] = array[r];
+          array[r] = tmp;
+        }
+        return array;
+      }
+
+      function hpDown(hp, hpImg){ //hp失ったときの処理
+        let imgname = "image" + hp;
+        document.getElementById(imgname).src = hpImg.src;
+        hp = hp - 1;
+        shivering(imgname);
+        return hp;
+      }
+
+      function shivering(imageName){ //パーツ揺らす処理
+        document.getElementById(imageName).animate(
+          [
+            {
+              offset: 0.00,
+              transform: 'translate(0, 0)'
+            },
+            {
+              offset: 0.05,
+              transform: 'translate(-20%, 0)'
+            },
+            {
+              offset: 0.10,
+              transform: 'translate(20%, 0)'
+            },
+            {
+              offset: 0.15,
+              transform: 'translate(-20%, 0)'
+            },
+            {
+              offset: 0.20,
+              transform: 'translate(20%, 0)'
+            },
+            {
+              offset: 0.25,
+              transform: 'translate(-20%, 0)'
+            },
+            {
+              offset: 0.30,
+              transform: 'translate(20%, 0)'
+            },
+            {
+              offset: 1.00,
+              transform: 'translate(0, 0)'
+            }
+          ],
+          {
+            duration: 1000, //再生時間（ミリ秒）
+            easing: 'linear', //イージング
+          },
+        );
+      }
+
+      function deadEnd(){//HPが尽きたら
+        clearInterval( PassageID );   // タイマーを止める
+        deadFlag = 1; //game overフラグを上げる
+        $('#fullOverlay').css({ //game over画面の出力
+          'display': 'block',
+          'z-index': 10
+        });
+      }
+
+      function getScore(){ //スコア算出
+        let time = Math.max(PassSec-30 , 0); //経過時間から30秒引いておく
+        // let minus = (1000*hp_max/(1+Math.exp(-0.5*time))) - 0.5*hp_max; //シグモイド関数
+        let minus = 2*(1/(1+Math.exp(-0.5*time)) - 0.5) * 1000*hp_max
+        let Score = 2.5*(1000*hp_max - minus);
+
+        ScoreLis.push(Score.toFixed(0));
+
+        document.getElementById("finalScore").innerHTML = "Your Score : " + Score.toFixed(0);
+      }
+
+      //DataBaseの更新
+      function SaveScore(){       
+
+        let query = location.search;
+        let value = query.split('=');
+
+        var temp = value[1];
+
+        var tags = [temp,Math.max.apply(null,ScoreLis)];
+
+        $.ajax({
+          url:"{% url 'login_app:save_data' %}",
+          dataType:"text",
+          data:{"tags":tags},
+          type:'POST',
+        }).done(function(data){
+          console.log(data);
+        });
+      }
+
+      //時間を進める
+      function showPassage() { 
+        PassSec = PassSec + 0.1;   // カウントアップ
+        let time =  PassSec.toFixed(1);   // 表示文作成
+        document.getElementById("timeArea").innerHTML = time;   // 表示更新
+      }
+
+      function retryButton(){ //もう一度を選んだ場合の初期化処理
+
+        Q_nums = [];
+        for(let i=0; i < Q.length; i++) {
+          Q_nums.push(i); //問題の出す順番の羅列
+        }  
+        for(let i=0; i < 5; i++){
+          arrayShuffle(Q_nums); //順番のシャッフル
+        }
+        Q_char_i = 0;//回答初期値・現在単語どこまで合っているか判定している文字番号
+        Q_i = 0; //今何問目かを保存
+        Q_No = Q_nums[Q_i]; //最初に出す問題番号の取得
+        Q_l = Q[Q_No].length;//計算用の文字の長さ
+
+        hp_max = 3; //hpの数値
+
+        startflag = 0; //ゲーム開始フラグ
+        oneStopFlag = 0; //ゲーム一時停止フラグ
+        deadFlag = 0; //ゲームオーバーフラグ
+
+        PassSec = 0; //時間経過保存変数
+
+        $('#fullOverlay').css({ //ゲームオーバー画面を下にしておく
+        'display': 'none',
+        'z-index': -10
+        });
+
+        $('#fullOverlay1').css({ //ゲームクリア画面を下にしておく
+        'display': 'none',
+        'z-index': -10
+        });
+
+        document.getElementById("answer").innerHTML = '<h1>'+"Pressed Enter Key"+'</h1>'; //画面の初期化
+        document.getElementById("start").innerHTML = "";
+
+        let hp_img = new Image()
+        hp_img.src = "static/img/HP_1.png"; //HPがあるとき用の画像
+        document.getElementById("image1").src = hp_img.src; //体力を満タンに戻す
+        document.getElementById("image2").src = hp_img.src;
+        document.getElementById("image3").src = hp_img.src;
+
+        document.getElementById("timeArea").innerHTML = 0;   // 時間をリセット
+      }
+
+      function link_origin(){
+        let query = location.search;
+        let value = query.split('=');
+
+        let temp = value[1];
+
+        SaveScore();
+
+        location.href = "{% url 'login_app:diffsec' %}" + "?name=" + encodeURIComponent(temp);
+      }
+
+      </script>
+
+
+  </body>
+</html>
