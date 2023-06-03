@@ -54,21 +54,19 @@ p {
 }
 
 .button {
-    font-size: large;
-    display: inline-block;
-    background-color: #4caf50;
-    color: #ffffff;
-    text-align: center;
-    padding: 10px 40px;
-    margin: 10px;
-    border-radius: 5px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 3px;
+    color: #fff;
     cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.3s;
+    font-size: 16px;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    width: 100%;
 }
 
 .button:hover {
-    background-color: #45a049;
+    background-color: #0056b3;
 }
 
 .mite {
