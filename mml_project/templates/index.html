@@ -74,6 +74,7 @@
       $("#button1").on("click", function (e) {
         // e.preventDefault();
         fd.set("type", "temp");
+        fd.set("user", "test");
         setInterval(function(){
           const startTime = Date.now();
           $.ajax({
@@ -97,7 +98,7 @@
       let cnt;
 
       function send_img_0() {
-        fd.set("type", "face-0");
+        fd.set("type", "train-0");
         $.ajax({
           url: '{% url "touchtyperman:get_data" %}',
           type: "POST",
@@ -130,7 +131,7 @@
 
 
       function send_img_1() {
-        fd.set("type", "face-1");
+        fd.set("type", "train-1");
         $.ajax({
           url: '{% url "touchtyperman:get_data" %}',
           type: "POST",
