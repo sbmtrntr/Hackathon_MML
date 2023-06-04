@@ -8,6 +8,7 @@ Pillow
 opencv-python-headless
 imutils
 dlib
+django-widget-tweaks
 
 # chainer==7.8.1
 # cmake==3.26.3

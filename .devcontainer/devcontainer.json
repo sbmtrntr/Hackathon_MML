@@ -10,7 +10,7 @@
 	// "postAttachCommand": "/usr/local/apache2/bin/apachectl restart",
 
 	"runArgs": [
-        "--name", "typerpro"
+        "--name", "typerpro", "--gpus", "all"
     ],
 
 	"customizations": {
