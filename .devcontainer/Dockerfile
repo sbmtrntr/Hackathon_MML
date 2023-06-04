@@ -3,7 +3,6 @@ FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
 USER root
 
 COPY requirements.txt requirements.txt
-# COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 
 RUN apt update && apt upgrade -y
 RUN apt install -y cmake
@@ -16,4 +15,4 @@ RUN apt install -y python3-pip
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
-EXPOSE 80
+EXPOSE 8000
