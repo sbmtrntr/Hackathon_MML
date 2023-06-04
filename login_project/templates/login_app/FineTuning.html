@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="ja">
     <head>
@@ -9,264 +8,261 @@
         <script src="https://code.jquery.com/jquery-3.5.1.min.js "></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
         <script src="https://docs.opencv.org/4.5.5/opencv.js"></script>
-        <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
-
-      <div class="display-none">
-          {% csrf_token %}
-          <canvas id="canvas"> </canvas>
-          <img id="image"> </img>
-      </div>
-      <div>
-        <video id="video" width="320" height="240" autoplay></video>
-        <input class = "button" type="button" value="画像送信" id="send_button">
-        <input class = "button" type="button" onclick="balance()" value="調整開始" id="balance_button">
-        <input class = "button" type="button" onclick="link()" value="難易度選択へ" id="m_button">
-      </div>
+        <link rel="stylesheet" href="{% static 'css/style3.css' %}"/>
     </head>
-
     <body>
         <form>
             {% csrf_token%}
             <input class = "back-button" type="button" value="タイトル画面に戻る" onClick="history.back()">
         </form>
-        <script>
-            //おまじない
-            function getCookie(name) {
-              var cookieValue = null;
-              if (document.cookie && document.cookie !== "") {
-                var cookies = document.cookie.split(";");
-                for (var i = 0; i < cookies.length; i++) {
-                  var cookie = jQuery.trim(cookies[i]);
-                  if (cookie.substring(0, name.length + 1) === name + "=") {
-                    cookieValue = decodeURIComponent(
-                      cookie.substring(name.length + 1)
-                    );
-                    break;
-                  }
-                }
+        <div class="display-none">
+            {% csrf_token %}
+            <canvas id="canvas"> </canvas>
+            <img id="image"> </img>
+        </div>
+        <div>
+            <video id="video" width="320" height="240" autoplay></video>
+            <input class = "button" type="button" value="画像送信" id="send_button">
+            <input class = "button" type="button" onclick="balance()" value="調整開始" id="balance_button">
+            <input class = "button" type="button" onclick="link()" value="難易度選択へ" id="m_button">
+        </div>
+    </body>
+    <script>
+        //おまじない
+        function getCookie(name) {
+          var cookieValue = null;
+          if (document.cookie && document.cookie !== "") {
+            var cookies = document.cookie.split(";");
+            for (var i = 0; i < cookies.length; i++) {
+              var cookie = jQuery.trim(cookies[i]);
+              if (cookie.substring(0, name.length + 1) === name + "=") {
+                cookieValue = decodeURIComponent(
+                  cookie.substring(name.length + 1)
+                );
+                break;
               }
-              return cookieValue;
             }
-      
-            var csrftoken = getCookie("csrftoken");
-      
-            function csrfSafeMethod(method) {
-              return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+          }
+          return cookieValue;
+        }
+  
+        var csrftoken = getCookie("csrftoken");
+  
+        function csrfSafeMethod(method) {
+          return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+        }
+  
+        $.ajaxSetup({
+          beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
-      
-            $.ajaxSetup({
-              beforeSend: function (xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                  xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
-              },
+          },
+        });
+        //ここまで
+
+
+        var query2 = location.search;
+        var value2 = query2.split('=');
+
+        var userName = value2[1];
+
+
+        document.getElementById("m_button").disabled = true;
+        document.getElementById("balance_button").disabled = true;
+
+        window.addEventListener("keydown", push_Keydown);//ボタンを押したら行う処理を登録
+
+        let cnt;
+
+        function send_img_0() {
+            fd.set("type", "train-0");
+            fd.set("user", userName);
+            $.ajax({
+                url: '{% url "login_app:get_data" %}',
+                type: "POST",
+                data: fd,
+                processData: false,
+                contentType: false,
+                dataType: "json",
+            }).done(function (data) {
+                // console.log(data);
+                cnt++;
             });
-            //ここまで
+        }
 
-
-            var query2 = location.search;
-            var value2 = query2.split('=');
-
-            var userName = value2[1];
-
-
-            document.getElementById("m_button").disabled = true;
-            document.getElementById("balance_button").disabled = true;
-
-            window.addEventListener("keydown", push_Keydown);//ボタンを押したら行う処理を登録
-
-            let cnt;
-
-            function send_img_0() {
-                fd.set("type", "train-0");
-                fd.set("user", userName);
-                $.ajax({
-                    url: '{% url "login_app:get_data" %}',
-                    type: "POST",
-                    data: fd,
-                    processData: false,
-                    contentType: false,
-                    dataType: "json",
-                }).done(function (data) {
-                    // console.log(data);
-                    cnt++;
-                });
+        var send_cnt = 0;
+        $("#send_button").on("click", function (e) {
+            if (document.getElementById("send_button").disabled === false) {
+                document.getElementById("send_button").setAttribute("disabled", true);
             }
-
-            var send_cnt = 0;
-            $("#send_button").on("click", function (e) {
-                if (document.getElementById("send_button").disabled === false) {
-                    document.getElementById("send_button").setAttribute("disabled", true);
+            cnt = 0;
+            send_cnt++;
+            const intervalId = setInterval(() =>{
+            send_img_0();
+            if(cnt >= 5){
+                clearInterval(intervalId);
+                if (document.getElementById("send_button").disabled === true) {
+                document.getElementById("send_button").removeAttribute("disabled");
                 }
+            }}, 200);
+            check_clear();
+        });
+
+
+
+
+        function send_img_1() {
+            fd.set("type", "train-1");
+            fd.set("user", userName);
+            $.ajax({
+                url: '{% url "login_app:get_data" %}',
+                type: "POST",
+                data: fd,
+                processData: false,
+                contentType: false,
+                dataType: "json",
+            }).done(function (data) {
+                // console.log(data);
+                cnt++;
+            });
+        }
+
+        function check_clear()
+        {
+            if(f_cnt >= 1 && j_cnt >= 1 && send_cnt >= 1)
+            {
+                document.getElementById("balance_button").disabled = false;
+            }
+        }
+
+        function send_img_2() {
+            fd.set("type", "train-2");
+            fd.set("user", userName);
+            $.ajax({
+                url: '{% url "login_app:get_data" %}',
+                type: "POST",
+                data: fd,
+                processData: false,
+                contentType: false,
+                dataType: "json",
+            }).done(function (data) {
+                // console.log(data);
+                cnt++;
+            });
+        }
+
+
+        var f_cnt = 0;
+        var j_cnt = 0;
+
+
+        function push_Keydown(event)
+        {
+            //do something
+            var KeyCode = event.key;
+            if(KeyCode == "f") // キーボードを見てる時の画像送信
+            {
+                f_cnt++;
                 cnt = 0;
-                send_cnt++;
-                const intervalId = setInterval(() =>{
-                send_img_0();
+                const intervalId1 = setInterval(() =>{
+                send_img_1();
                 if(cnt >= 5){
-                    clearInterval(intervalId);
-                    if (document.getElementById("send_button").disabled === true) {
-                    document.getElementById("send_button").removeAttribute("disabled");
-                    }
+                    clearInterval(intervalId1);
                 }}, 200);
                 check_clear();
+            }
+            else if(KeyCode == "j") // 目を閉じてる時の画像送信
+            {
+                j_cnt++;
+                cnt = 0;
+                const intervalId2 = setInterval(() =>{
+                send_img_2();
+                if(cnt >= 5){
+                    clearInterval(intervalId2);
+                }}, 200);
+                check_clear();
+            }
+        }
+
+
+
+        function balance()
+        {
+            document.getElementById("balance_button").disabled = true;
+            $.ajax({
+                url: '{% url "login_app:get_data" %}',
+                type: "POST",
+                data: {type: "training", user: userName},
+                dataType: "json",
+            }).done(function (data) {
+                if (data["success"]) {
+                    document.getElementById("m_button").disabled = false;
+                }
+            });
+            //do something
+        }
+
+        function link()
+        {
+            var query = location.search;
+            var value = query.split('=');
+
+            var temp = value[1];
+
+            location.href = "{% url 'login_app:diffsec' %}" + "?name=" + encodeURIComponent(temp);
+        }
+
+
+
+
+
+        const video = document.getElementById("video");
+        navigator.mediaDevices
+            .getUserMedia({
+            video: true,
+            audio: false,
+            })
+            .then((stream) => {
+            video.srcObject = stream;
+            video.play();
+            setInterval(draw, 10);
+            })
+            .catch((e) => {
+            console.log(e);
             });
 
+        const canvas = document.getElementById("canvas");
+        let image = document.getElementById("image");
+
+        canvas.width = 340;
+        canvas.height = 260;
+
+        let fd = new FormData();
+        function draw() {
+            let ctx = canvas.getContext("2d");
+
+            ctx.drawImage(video, 150, 210, 340, 260, 0, 0, canvas.width, canvas.height);
+
+            let mat = cv.imread("canvas");
+            cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0);
+            cv.imshow("canvas", mat);
+            mat.delete();
 
 
+            var base64 = canvas.toDataURL("image/jpeg", 1.0);
+            image.setAttribute("src", base64);
 
-            function send_img_1() {
-                fd.set("type", "train-1");
-                fd.set("user", userName);
-                $.ajax({
-                    url: '{% url "login_app:get_data" %}',
-                    type: "POST",
-                    data: fd,
-                    processData: false,
-                    contentType: false,
-                    dataType: "json",
-                }).done(function (data) {
-                    // console.log(data);
-                    cnt++;
-                });
+            var bin = atob(base64.replace(/^.*,/, ""));
+            var buffer = new Uint8Array(bin.length);
+            for (var i = 0; i < bin.length; i++) {
+            buffer[i] = bin.charCodeAt(i);
             }
+            var file = new File([buffer.buffer], "img.jpeg", {
+            type: "image/jpeg",
+            });
 
-            function check_clear()
-            {
-                if(f_cnt >= 1 && j_cnt >= 1 && send_cnt >= 1)
-                {
-                    document.getElementById("balance_button").disabled = false;
-                }
-            }
-
-            function send_img_2() {
-                fd.set("type", "train-2");
-                fd.set("user", userName);
-                $.ajax({
-                    url: '{% url "login_app:get_data" %}',
-                    type: "POST",
-                    data: fd,
-                    processData: false,
-                    contentType: false,
-                    dataType: "json",
-                }).done(function (data) {
-                    // console.log(data);
-                    cnt++;
-                });
-            }
-
-
-            var f_cnt = 0;
-            var j_cnt = 0;
-
-
-            function push_Keydown(event)
-            {
-                //do something
-                var KeyCode = event.key;
-                if(KeyCode == "f") // キーボードを見てる時の画像送信
-                {
-                    f_cnt++;
-                    cnt = 0;
-                    const intervalId1 = setInterval(() =>{
-                    send_img_1();
-                    if(cnt >= 5){
-                        clearInterval(intervalId1);
-                    }}, 200);
-                    check_clear();
-                }
-                else if(KeyCode == "j") // 目を閉じてる時の画像送信
-                {
-                    j_cnt++;
-                    cnt = 0;
-                    const intervalId2 = setInterval(() =>{
-                    send_img_2();
-                    if(cnt >= 5){
-                        clearInterval(intervalId2);
-                    }}, 200);
-                    check_clear();
-                }
-            }
-
-
-
-            function balance()
-            {
-                document.getElementById("balance_button").disabled = true;
-                $.ajax({
-                    url: '{% url "login_app:get_data" %}',
-                    type: "POST",
-                    data: {type: "training", user: userName},
-                    dataType: "json",
-                }).done(function (data) {
-                    if (data["success"]) {
-                        document.getElementById("m_button").disabled = false;
-                    }
-                });
-                //do something
-            }
-
-            function link()
-            {
-                var query = location.search;
-                var value = query.split('=');
-
-                var temp = value[1];
-
-                location.href = "{% url 'login_app:diffsec' %}" + "?name=" + encodeURIComponent(temp);
-            }
-
-
-
-
-
-            const video = document.getElementById("video");
-            navigator.mediaDevices
-                .getUserMedia({
-                video: true,
-                audio: false,
-                })
-                .then((stream) => {
-                video.srcObject = stream;
-                video.play();
-                setInterval(draw, 10);
-                })
-                .catch((e) => {
-                console.log(e);
-                });
-
-            const canvas = document.getElementById("canvas");
-            let image = document.getElementById("image");
-
-            canvas.width = 340;
-            canvas.height = 260;
-
-            let fd = new FormData();
-            function draw() {
-                let ctx = canvas.getContext("2d");
-
-                ctx.drawImage(video, 150, 210, 340, 260, 0, 0, canvas.width, canvas.height);
-
-                let mat = cv.imread("canvas");
-                cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0);
-                cv.imshow("canvas", mat);
-                mat.delete();
-
-
-                var base64 = canvas.toDataURL("image/jpeg", 1.0);
-                image.setAttribute("src", base64);
-
-                var bin = atob(base64.replace(/^.*,/, ""));
-                var buffer = new Uint8Array(bin.length);
-                for (var i = 0; i < bin.length; i++) {
-                buffer[i] = bin.charCodeAt(i);
-                }
-                var file = new File([buffer.buffer], "img.jpeg", {
-                type: "image/jpeg",
-                });
-
-                fd.set("img", file);
-            }
-
-        </script>
-    </body>
+            fd.set("img", file);
+        }
+    </script>
 </html>

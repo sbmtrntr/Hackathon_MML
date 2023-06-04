@@ -5,8 +5,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import transforms
 
-# import cnn
-# import data_prep
+import cnn
+import data_prep
 
 
 
