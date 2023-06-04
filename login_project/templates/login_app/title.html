@@ -3,30 +3,23 @@
 <html lang="ja">
     <head>
         <meta charset="utf-8">
-        <title>目指せ！タッチタイパーマン！（仮）</title>
+        <title>ホーム</title>
         <meta name="description" content="Hackathon_MML">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
-        <!-- <script src="main.js"></script> -->
+        <link rel="stylesheet" href="{% static 'css/style3.css' %}"/>
     </head>
     <body>
-        <!----- header----->
-        <!-- <header></header> -->
-        <!----- /header ----->
-        
-        <!----- main ----->
+        <header>
+            <h1>Geek Touch Typer</h1>
+        </header>
+        <img src="static/img/mitechan_clear.png" alt="ニコニコ見てちゃん" class="mite">
         <div class="container">
-            <h1>目指せ！タッチタイパーマン！（）</h1>
-            <div id="start-screen">
-                {% comment %} <input class = "button" type="button" onclick="link1()" value="プレイ"> {% endcomment %}
-                <input class = "button" type="button" onclick="link1()" value="プレイ">
-                <input class = "button" type="button" onclick="link2()" value="遊び方">
-                <input class = "button" type="button" onclick="ranking()" value="ランキング">
-            </div>
+            <p><input class = "button" type="button" onclick="link1()" value="プレイ"></p>
+            <p><input class = "button" type="button" onclick="link2()" value="遊び方"></p>
+            <p><input class = "button" type="button" onclick="ranking()" value="ランキング"></p>
         </div>
-        <!----- /main ----->
-        
-        <!----- footer ----->
-        <!-- <footer></footer> -->
+        <footer>
+            <p>Produced by MML</p>
+        </footer>
         <script>
             function link1()
             {
@@ -43,7 +36,5 @@
                 location.href ="{% url 'login_app:ranking' %}" + "?name=" + encodeURIComponent(temp);
             }
         </script>
-
-        <!----- /footer ----->
     </body>
 </html>
