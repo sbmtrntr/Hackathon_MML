@@ -10,7 +10,7 @@ class CNN(nn.Module):
         self.conv = nn.Conv2d(1, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
         self.fc1 = nn.Linear(6 * 1824, 84)
-        self.fc2 = nn.Linear(84, 3)
+        self.fc2 = nn.Linear(84, 2)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv(x)))

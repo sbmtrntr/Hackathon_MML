@@ -73,7 +73,7 @@
             document.getElementById("m_button").disabled = true;
             document.getElementById("balance_button").disabled = true;
 
-            window.addEventListener("keydown", push_Keydown);//ボタンを押したら行う処理を登録
+            // window.addEventListener("keydown", push_Keydown);//ボタンを押したら行う処理を登録
 
             let cnt;
 
@@ -100,6 +100,7 @@
                 }
                 cnt = 0;
                 send_cnt++;
+                console.log(send_cnt);
                 const intervalId = setInterval(() =>{
                 send_img_0();
                 if(cnt >= 5){
@@ -130,67 +131,81 @@
                 });
             }
 
-            function check_clear()
-            {
-                if(f_cnt >= 1 && j_cnt >= 1 && send_cnt >= 1)
-                {
+
+            var key_cnt = 0;
+            document.addEventListener('keypress', keypress_ivent);
+            function keypress_ivent(e) {
+                cnt = 0;
+                key_cnt++;
+                console.log(key_cnt);
+                const intervalId = setInterval(() =>{
+                send_img_1();
+                if(cnt >= 5){
+                clearInterval(intervalId);
+                }}, 200);
+                check_clear();
+            }
+
+
+            function check_clear() {
+                if(send_cnt >= 1 && key_cnt >= 1) {
                     document.getElementById("balance_button").disabled = false;
                 }
             }
 
-            function send_img_2() {
-                fd.set("type", "train-2");
-                fd.set("user", userName);
-                $.ajax({
-                    url: '{% url "login_app:get_data" %}',
-                    type: "POST",
-                    data: fd,
-                    processData: false,
-                    contentType: false,
-                    dataType: "json",
-                }).done(function (data) {
-                    // console.log(data);
-                    cnt++;
-                });
-            }
+            // function send_img_2() {
+            //     fd.set("type", "train-2");
+            //     fd.set("user", userName);
+            //     $.ajax({
+            //         url: '{% url "login_app:get_data" %}',
+            //         type: "POST",
+            //         data: fd,
+            //         processData: false,
+            //         contentType: false,
+            //         dataType: "json",
+            //     }).done(function (data) {
+            //         // console.log(data);
+            //         cnt++;
+            //     });
+            // }
 
 
-            var f_cnt = 0;
-            var j_cnt = 0;
+            // var f_cnt = 0;
+            // var j_cnt = 0;
 
 
-            function push_Keydown(event)
-            {
-                //do something
-                var KeyCode = event.key;
-                if(KeyCode == "f") // キーボードを見てる時の画像送信
-                {
-                    f_cnt++;
-                    cnt = 0;
-                    const intervalId1 = setInterval(() =>{
-                    send_img_1();
-                    if(cnt >= 5){
-                        clearInterval(intervalId1);
-                    }}, 200);
-                    check_clear();
-                }
-                else if(KeyCode == "j") // 目を閉じてる時の画像送信
-                {
-                    j_cnt++;
-                    cnt = 0;
-                    const intervalId2 = setInterval(() =>{
-                    send_img_2();
-                    if(cnt >= 5){
-                        clearInterval(intervalId2);
-                    }}, 200);
-                    check_clear();
-                }
-            }
+            // function push_Keydown(event)
+            // {
+            //     //do something
+            //     var KeyCode = event.key;
+            //     if(KeyCode == "f") // キーボードを見てる時の画像送信
+            //     {
+            //         f_cnt++;
+            //         cnt = 0;
+            //         const intervalId1 = setInterval(() =>{
+            //         send_img_1();
+            //         if(cnt >= 5){
+            //             clearInterval(intervalId1);
+            //         }}, 200);
+            //         check_clear();
+            //     }
+            //     else if(KeyCode == "j") // 目を閉じてる時の画像送信
+            //     {
+            //         j_cnt++;
+            //         cnt = 0;
+            //         const intervalId2 = setInterval(() =>{
+            //         send_img_2();
+            //         if(cnt >= 5){
+            //             clearInterval(intervalId2);
+            //         }}, 200);
+            //         check_clear();
+            //     }
+            // }
 
 
 
-            function balance()
-            {
+            function balance() {
+                document.getElementById("send_button").disabled = true;
                 document.getElementById("balance_button").disabled = true;
                 $.ajax({
                     url: '{% url "login_app:get_data" %}',
@@ -228,7 +243,7 @@
                 .then((stream) => {
                 video.srcObject = stream;
                 video.play();
-                setInterval(draw, 10);
+                setInterval(draw, 200);
                 })
                 .catch((e) => {
                 console.log(e);

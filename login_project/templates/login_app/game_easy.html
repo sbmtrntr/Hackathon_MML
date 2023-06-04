@@ -62,6 +62,15 @@
           </div>
         </div>
 
+        {% comment %} 台詞画面 {% endcomment %}
+        <div id = "fullOverlay_P2">
+          <img src="{% static 'img/phrase2.png' %}" width="330" height="300" id="phrase2"/>
+        </div>
+
+        <div id = "fullOverlay_P3">
+          <img src="{% static 'img/phrase3.png' %}" width="330" height="300" id="phrase3"/>
+        </div>
+
         <ul>
           <p id = "timeArea" class="absolute01">0</p>     
           <li>
@@ -73,8 +82,10 @@
           </li>         
         </ul>
         <!-- </div> -->
+        <div class = "girl">
+          <img src="{% static 'img/mitechan_1.png' %}" width="380" height="420" id="imageGirl"/>
+        </div>
         <div class = "container">
-          <img src="{% static 'img/move_chara.gif' %}" width="140" height="160" id="imageGif"/>
           <h1 id="answer" class="text">Pressed Enter Key</h1>
           <p id="start" class="text"></p>
         </div>
@@ -315,6 +326,8 @@
       var PassSec = 0;
 
       var stop_flag = false;
+
+      var perfect_num = 0;
   
       function push_Keydown(event){ //こっからはボタンを押したときの処理
         let keyCode = event.key;
@@ -345,7 +358,33 @@
                 console.log(Q_i);
                 Q_l = Q[Q_No].length;//計算用の文字の長さ
                 Q_char_i = 0; //文字のインデックスの初期化
-              
+                
+                perfect_num++;
+                if(perfect_num >= 5)
+                {
+                    perfect_num = 0;
+                    var img_g = new Image();
+                    img_g.src = "static/img/mitechan_clear.png";
+                    document.getElementById("imageGirl").src = img_g.src;
+                    $('#fullOverlay_P3').css({ //game clear画面の出力
+                                                'display': 'block',
+                                                'z-index': 10
+                                            });
+                    jumping();
+                    setTimeout( function(){
+                      $('#fullOverlay_P3').css({ 
+                                            'display': 'block',
+                                            'z-index': -20
+                                            });
+                      var img_g2 = new Image();
+
+                      img_g2.src = "static/img/mitechan_1.png";
+                      document.getElementById("imageGirl").src = img_g2.src;
+                    },2000);
+                    //let id = hidePhrase3()
+                    //setTimeout(hidePhrase3(), 2000);
+                }
+
                 document.getElementById("start").innerHTML = String.raw({"raw":Q[Q_No].substring(Q_char_i, Q_l)}); //新たな問題を書き出す
                 document.getElementById("answer").innerHTML = String.raw({"raw":ans[Q_No]});
               }
@@ -369,12 +408,23 @@
           }
           else{ //キー入力を間違えたら
             if(oneStopFlag == 0){
+              perfect_num = 0;
               hp_max = hpDown(hp_max,hp) //hpを減らす
+              jumping();
+              $('#fullOverlay_P2').css({ //game clear画面の出力
+                  'display': 'block',
+                  'z-index': 10
+              });
               if(hp_max == 0){//体力0になったら終わり
                 deadEnd()
               }
               oneStopFlag = 1;
-              let stopperBreak = () => (oneStopFlag = 0)
+              let stopperBreak = () => (oneStopFlag = 0);
+              let phrase2 = () => ($('#fullOverlay_P2').css({ 
+                                    'display': 'block',
+                                    'z-index': -20
+                                  }))
+              setTimeout(phrase2, 2000);
               setTimeout(stopperBreak, 1000)
             }
           }
@@ -445,6 +495,23 @@
   
       // ここからはfunction群
 
+      function hidePhrase3(){
+        $('#fullOverlay_P3').css({ 
+                              'display': 'block',
+                              'z-index': -20
+                              });
+        var img_g2 = new Image();
+        img_g2.src = "static/img/mitechan_1.png";
+        document.getElementById("imageGirl").src = img_g2.src;                                        
+      }
+
+      function hidePhrase2(){
+        $('#fullOverlay_P2').css({ 
+          'display': 'block',
+          'z-index': -20
+        });
+      }
+
       function arrayShuffle(array) {
         for(let i = (array.length - 1); 0 < i; i--){
   
@@ -502,6 +569,58 @@
               offset: 1.00,
               transform: 'translate(0, 0)'
             }
+          ],
+          {
+            duration: 1000, //再生時間（ミリ秒）
+            easing: 'linear', //イージング
+          },
+        );
+      }
+
+      function jumping(){ //パーツ揺らす処理
+        document.getElementById("imageGirl").animate(
+          [
+            {
+              offset: 0.00,
+              transform: 'translate(0, 0)'
+            },
+            {
+              offset: 0.10,
+              transform: 'translate(0, -10%)'
+            },
+            {
+              offset: 0.20,
+              transform: 'translate(0, -15%)'
+            },
+            {
+              offset: 0.30,
+              transform: 'translate(0, -10%)'
+            },
+            {
+              offset: 0.40,
+              transform: 'translate(0, 0)'
+            },
+            {
+              offset: 0.50,
+              transform: 'translate(0, -10%)'
+            },
+            {
+              offset: 0.60,
+              transform: 'translate(0, -15%)'
+            },
+            {
+              offset: 0.70,
+              transform: 'translate(0, -10%)'
+            },
+            {
+              offset: 0.80,
+              transform: 'translate(0, 0)'
+            },
+            {
+              offset: 1.00,
+              transform: 'translate(0, 0)'
+            }
+
           ],
           {
             duration: 1000, //再生時間（ミリ秒）
@@ -572,7 +691,7 @@
         'z-index': -10
         });
 
-        document.getElementById("answer").innerHTML = '<h1>'+"Pressed Enter Key"+'</h1>'; //画面の初期化
+        document.getElementById("answer").innerHTML = "Pressed Enter Key"; //画面の初期化
         document.getElementById("start").innerHTML = "";
 
         let hp_img = new Image()
@@ -600,7 +719,7 @@
       }
 
       //DataBaseの更新
-      function SaveScore(){       
+      function SaveScore(){
 
         let query = location.search;
         let value = query.split('=');
@@ -630,7 +749,7 @@
        .then((stream) => {
          video.srcObject = stream;
          video.play();
-         setInterval(draw, 10);
+         setInterval(draw, 200);
        })
        .catch((e) => {
          console.log(e);

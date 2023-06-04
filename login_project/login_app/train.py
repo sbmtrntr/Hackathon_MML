@@ -102,24 +102,24 @@ class Train:
 
 
 
-if __name__ == '__main__':
-    transform = transforms.Compose([transforms.ToTensor()])
+# if __name__ == '__main__':
+#     transform = transforms.Compose([transforms.ToTensor()])
 
-    train_file_list, test_file_list = data_prep.make_filepath_list()
+#     train_file_list, test_file_list = data_prep.make_filepath_list()
 
-    train_dataset = data_prep.EyeDataset(file_list=train_file_list, transform=transform)
-    test_dataset = data_prep.EyeDataset(file_list=test_file_list, transform=transform)
+#     train_dataset = data_prep.EyeDataset(file_list=train_file_list, transform=transform)
+#     test_dataset = data_prep.EyeDataset(file_list=test_file_list, transform=transform)
 
-    batch_size = 4
+#     batch_size = 4
 
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2, drop_last=False)
+#     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+#     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2, drop_last=False)
 
 
-    net = cnn.CNN()
+#     net = cnn.CNN()
 
-    max_epoch = 50
-    train = Train(net, train_loader, test_loader)
-    train.training(max_epoch)
+#     max_epoch = 50
+#     train = Train(net, train_loader, test_loader)
+#     train.training(max_epoch)
 
 

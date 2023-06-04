@@ -26,7 +26,7 @@ import login_app.train as train
 transform = transforms.Compose([transforms.ToTensor()])
 
 softmax = nn.Softmax(dim=1)
-threshold = 0.4
+threshold = 0.5
 
 cnn_dict = {}
 cnt_dict = {}
@@ -140,7 +140,7 @@ def save_data(request):
         new_data = ScoreData(name=tags[0],score=tags[1])
         new_data.save()
 
-    #if ScoreData.objects.get(name=tags[0]):        
+    #if ScoreData.objects.get(name=tags[0]):
 
     temp = {'success': tags}
     return JsonResponse(temp)
@@ -246,7 +246,7 @@ def get_data(request):
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 
-        max_epoch = 50
+        max_epoch = 1
         finetune = train.Train(net, train_loader)
         finetune.training(max_epoch)
 
@@ -255,7 +255,7 @@ def get_data(request):
         os.makedirs(f'login_app/img/{user}/temp/', exist_ok=True)
         os.makedirs(f'login_app/img/{user}/train/0/', exist_ok=True)
         os.makedirs(f'login_app/img/{user}/train/1/', exist_ok=True)
-        os.makedirs(f'login_app/img/{user}/train/2/', exist_ok=True)
+        # os.makedirs(f'login_app/img/{user}/train/2/', exist_ok=True)
         return JsonResponse(d)
 
 
@@ -263,21 +263,21 @@ def get_data(request):
         if user not in cnn_dict:
             cnn_dict[user] = cnn.CNN()
         if user not in cnt_dict:
-            cnt_dict[user] = [0, 0, 0]
+            cnt_dict[user] = [0, 0]
         if not os.path.isdir(f'login_app/img/{user}/'):
             os.makedirs(f'login_app/img/{user}/temp/', exist_ok=True)
             os.makedirs(f'login_app/img/{user}/train/0/', exist_ok=True)
             os.makedirs(f'login_app/img/{user}/train/1/', exist_ok=True)
-            os.makedirs(f'login_app/img/{user}/train/2/', exist_ok=True)
+            # os.makedirs(f'login_app/img/{user}/train/2/', exist_ok=True)
         if dtype == 'train-0':
             file_name = f'login_app/img/{user}/train/0/image_{cnt_dict[user][0]:05}.jpg'
             cnt_dict[user][0] += 1
         elif dtype == 'train-1':
             file_name = f'login_app/img/{user}/train/1/image_{cnt_dict[user][1]:05}.jpg'
             cnt_dict[user][1] += 1
-        elif dtype == 'train-2':
-            file_name = f'login_app/img/{user}/train/2/image_{cnt_dict[user][2]:05}.jpg'
-            cnt_dict[user][2] += 1
+        # elif dtype == 'train-2':
+        #     file_name = f'login_app/img/{user}/train/2/image_{cnt_dict[user][2]:05}.jpg'
+        #     cnt_dict[user][2] += 1
         with open(file_name, 'wb+') as f:
             for chunk in file.chunks():
                 f.write(chunk)
