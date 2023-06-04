@@ -1,19 +1,23 @@
 {
-	"name": "TouchTyperPro",
+	"name": "GeekTouchTyper",
 
     "dockerFile": "Dockerfile",
 
 	// "workspaceFolder": "/home",
 	// "workspaceMount": "source=${localWorkspaceFolder},target=/home,type=bind",
 
-	// "appPort": ["8080:80"],
+	"appPort": ["8000:8000"],
 	// "postAttachCommand": "/usr/local/apache2/bin/apachectl restart",
 
 	"runArgs": [
-        "--name", "typerpro"
+        "--name", "typerpro", "--gpus", "all"
     ],
 
-	"extensions": [
-		"ms-python.python"
-	]
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python"
+			]
+		}
+	}
 }
