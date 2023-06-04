@@ -3,24 +3,20 @@
 <html lang="ja">
     <head>
         <meta charset="utf-8">
-        <title>目指せ！タッチタイパーマン！（仮）</title>
+        <title>難易度選択</title>
         <meta name="description" content="Hackathon_MML">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style3.css' %}">
     </head>
     <body>
-        <!----- header----->
         <header>
+            <h1>Geek Touch Typer</h1>
         </header>
-        <nav></nav>
-        <!----- /header ----->
-        
-        <!----- main ----->
+        <img src="static/img/mitechan_clear.png" alt="ニコニコ見てちゃん" class="mite">
+        <form>
+            {% csrf_token%}
+            <input class = "back-button" type="button" value="タイトル画面に戻る" onClick="history.back()">
+        </form>
         <div class="container">
-            <form>
-                {% csrf_token%}
-                <input class = "back-button" type="button" value="タイトル画面に戻る" onClick="history.back()">
-            </form>
-            <h2>難易度を選択してください:</h2>
             <div class="difficulty-buttons">
                 <input class = "button" type="button" onclick="link_easy()" value="Easy">
                 <p class="difficulty-description">簡単なレベルでゲームを楽しめます。</p>
@@ -36,7 +32,9 @@
                 <p class="difficulty-description">難しいレベルでゲームを楽しめます。</p>
             </div>
         </div>
-        <!----- /main ----->
+        <footer>
+            <p>Produced by MML</p>
+        </footer>
         <script>
 
             let query = location.search;
@@ -64,8 +62,5 @@
                 location.href = "{% url 'login_app:title' %}";
             }
         </script>
-        <!----- footer ----->
-        <footer></footer>
-        <!----- /footer ----->
     </body>
 </html>

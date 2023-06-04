@@ -19,6 +19,6 @@ urlpatterns = [
     path('gameHard',views.gameHard,name='gameHard'),
     path('ajax/', views.get_data, name='get_data'),
     path('savedata',views.save_data, name='save_data'),
-    path('Fintuning',views.move_balance,name='fineTuning'),
+    path('Finetuning',views.move_balance,name='fineTuning'),
     path('ranking',views.move_ranking,name='ranking'),
 ]
