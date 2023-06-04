@@ -9,12 +9,12 @@ from django.views.decorators.csrf import csrf_protect
 
 import os
 import shutil
-import cv2
+# import cv2
 
-import torch
-import torch.nn as nn
-from torchvision import transforms
-import torch.utils.data as data
+# import torch
+# import torch.nn as nn
+# from torchvision import transforms
+# import torch.utils.data as data
 
 
 import login_app.cnn as cnn
@@ -23,29 +23,29 @@ import login_app.train as train
 
 
 
-transform = transforms.Compose([transforms.ToTensor()])
+# transform = transforms.Compose([transforms.ToTensor()])
 
-softmax = nn.Softmax(dim=1)
-threshold = 0.4
+# softmax = nn.Softmax(dim=1)
+# threshold = 0.4
 
-cnn_dict = {}
-cnt_dict = {}
-
-
+# cnn_dict = {}
+# cnt_dict = {}
 
 
 
 
-class RealtimeDataset(data.Dataset):
-    def __init__(self, img, transform):
-        self.img = img
-        self.transform = transform
 
-    def __len__(self):
-        return 1
 
-    def __getitem__(self, index):
-        return self.transform(self.img)
+# class RealtimeDataset(data.Dataset):
+#     def __init__(self, img, transform):
+#         self.img = img
+#         self.transform = transform
+
+#     def __len__(self):
+#         return 1
+
+#     def __getitem__(self, index):
+#         return self.transform(self.img)
 
 
 
