@@ -12,20 +12,6 @@
 	"runArgs": [
         "--name", "typerpro", "--gpus", "all"
     ],
-{
-	"name": "GeekTouchTyper",
-
-    "dockerFile": "Dockerfile",
-
-	// "workspaceFolder": "/home",
-	// "workspaceMount": "source=${localWorkspaceFolder},target=/home,type=bind",
-
-	"appPort": ["8000:8000"],
-	// "postAttachCommand": "/usr/local/apache2/bin/apachectl restart",
-
-	"runArgs": [
-        "--name", "typerpro", "--gpus", "all"
-    ],
 
 	"customizations": {
 		"vscode": {
