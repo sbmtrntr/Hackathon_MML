@@ -19,9 +19,13 @@
 3. サーバーを実行する
     1. プロジェクトディレクトリに移動
         ```
-        cd login_project
+        cd MML_project
         ```
-    2. pythonを実行する
+    2. データベースを作成する
+        ```
+        python manage.py migrate
+        ```
+    3. サーバを立ち上げる
         ```
         python manage.py runserver [取得したIP]:8000
         ```
