@@ -1,5 +1,5 @@
 # Geek Touch Typer
-サポーターズが主催するハッカソンで優秀賞を受賞した作品。(https://twitter.com/geek_pjt/status/1665287265659105281?s=61&t=BE0nPuZTR0ueV0_wTYGzWg)
+サポーターズが主催するハッカソンで優秀賞を受賞。(https://twitter.com/geek_pjt/status/1665287265659105281?s=61&t=BE0nPuZTR0ueV0_wTYGzWg)
 
 ## 紹介
 ![スクリーンショット 2023-06-16 12 27 50](https://github.com/sbmtrntr/Hackathon_MML/assets/97890981/bb328ebf-63e6-47e2-91ea-917ced8ca891)
