@@ -1,0 +1,19 @@
+{
+	"name": "GeekTouchTyper",
+
+    "dockerFile": "Dockerfile",
+
+	"appPort": ["8000:8000"],
+
+	"runArgs": [
+        "--name", "typer" //, "--gpus", "all"
+    ],
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python"
+			]
+		}
+	}
+}

@@ -1,0 +1,35 @@
+{% load static %}
+{% load widget_tweaks %}
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>ログイン</title>
+        <meta name="description" content="GeekTouchTyper">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h1>Geek Touch Typer</h1>
+            </header>
+            <div class="box-container">
+                <img src="static/img/mitechan_login.png" alt="みてちゃん" class="mite">
+                <div class="box">
+                    <h2>ログイン</h2>
+                    <form action="{% url 'app:login'%}" method="post">
+                    {% csrf_token %}
+                        <p>{{ form.username|add_class:'username' }}</p>
+                        <p>{{ form.password|add_class:'password' }}</p>
+                        <p><input type="hidden" name="next" value="{{next}}"></p>
+                        <p><input class="button" type="submit" value="ログイン"></p>
+                    </form>
+                    <div id="description">アカウントがない人はこちら：<a href="{% url 'app:signup'%}">新規登録</a></div>
+                </div>
+            </div>
+            <footer>
+                <p>Produced by MML</p>
+            </footer>
+        </div>
+    </body>
+</html>

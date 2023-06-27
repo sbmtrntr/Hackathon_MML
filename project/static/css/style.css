@@ -1,0 +1,138 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #ade0ee;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header h1 {
+  font-family: "Comic Sans MS";
+  text-align: center;
+  margin-top: 3%;
+  color: black;
+  font-size: 65px;
+}
+
+footer {
+  width: 100%;
+  height: 100px;
+  background-color: #999;
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: large;
+}
+
+.box {
+  background-color: #f9f9f9;
+  max-width: 50%;
+  min-width: 20%;
+  margin: 5% 5% 5% 5%;
+  padding: 5%;
+  text-align: center;
+  margin-right: 20%;
+}
+
+.box-signup {
+  background-color: #f9f9f9;
+  max-width: 50%;
+  margin: 2% 2% 2% 2%;
+  padding: 3%;
+  text-align: center;
+  margin-right: 20%;
+}
+
+.box-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* .description {
+  margin: 10px;
+} */
+
+p {
+  color: #555;
+  margin: 0;
+}
+
+.separator {
+  border-bottom: 1px solid #ddd;
+  margin: 20px 0;
+}
+
+.button {
+  background-color: #007bff;
+  border: none;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.mite {
+  width: 30%;
+  height: 30%;
+  float: left;
+  margin-left: 15%;
+}
+
+.username {
+  font-size: 120%;
+  width: 80%;
+  margin: 5%;
+}
+
+.password {
+  font-size: 120%;
+  width: 80%;
+  margin-bottom: 5%;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.label {
+  font-size: 120%;
+  width: 80%;
+  margin: 5%;
+}
+
+.field {
+  font-size: 120%;
+  width: 80%;
+  margin: 5%;
+}
+.container .button {
+  font-size: large;
+  display: inline-block;
+  background-color: #4caf50;
+  color: #ffffff;
+  text-align: center;
+  padding: 10px 40px;
+  margin: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.container .button:hover {
+  background-color: #45a049;
+}

@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>難易度選択</title>
+        <meta name="description" content="GeekTouchTyper">
+        <link rel="stylesheet" href="{% static 'css/style3.css' %}">
+    </head>
+    <body>
+        <header>
+            <h1>Geek Touch Typer</h1>
+        </header>
+        {% comment %} <form>
+            {% csrf_token%}
+            <input class = "back-button" type="button" value="タイトル画面に戻る" onClick="history.back()">
+        </form> {% endcomment %}
+        <input class = "back-button" type="button" onClick="link_origin()" value="タイトル画面に戻る" >
+        <div class="box-container">
+            <img src="static/img/mitechan_selection.png" alt="みてちゃん" class="mite">
+            <div class="container">
+                <div class="difficulty-buttons">
+                    <input class = "button" type="button" onclick="link_easy()" value="Easy">
+                    <p class="difficulty-description">簡単なレベルでゲームを楽しめます。</p>
+                </div>
+
+                <div class="difficulty-buttons">
+                    <input class = "button" type="button" onclick="link_normal()" value="Normal">
+                    <p class="difficulty-description">通常のレベルでゲームを楽しめます。</p>
+                </div>
+
+                <div class="difficulty-buttons">
+                    <input class = "button" type="button" onclick="link_hard()" value="Hard">
+                    <p class="difficulty-description">難しいレベルでゲームを楽しめます。</p>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <p>Produced by MML</p>
+        </footer>
+        <script>
+
+            let query = location.search;
+            let value = query.split('=');
+
+            let temp = value[1]
+
+            function link_easy()
+            {
+                location.href = "{% url 'app:gameEasy' %}" + "?name=" + encodeURIComponent(temp);
+            }
+
+            function link_normal()
+            {
+                location.href = "{% url 'app:gameNormal' %}" + "?name=" + encodeURIComponent(temp);
+            }
+
+            function link_hard()
+            {
+                location.href = "{% url 'app:gameHard' %}" + "?name=" + encodeURIComponent(temp);
+            }
+
+            function link_origin()
+            {
+                location.href = "{% url 'app:title' %}"  + "?name=" + encodeURIComponent(temp);
+            }
+        </script>
+    </body>
+</html>

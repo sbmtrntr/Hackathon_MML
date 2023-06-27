@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Geek Touch Typer</title>
+        <meta name="description" content="GeekTouchTyper">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h1>Geek Touch Typer</h1>
+            </header>
+            <div class="box-container">
+                <img src="static/img/mitechan_index.png" alt="みてちゃん" class="mite">
+                <div class="box">
+                    <div class="description">
+                        <p>既にユーザー登録済みの人はこちら</p>
+                    </div>
+                    <input class="button" type="button" onclick="link1()" value="ログイン">
+                    <div class="separator"></div>
+                    <div class="description">
+                        <p>まだユーザー登録をしていない人はこちら</p>
+                    </div>
+                    <input class = "button" type="button" onclick="link2()" value="新規登録">
+                </div>
+            </div>
+            <footer>
+                <p>Produced by MML</p>
+            </footer>
+        </div>
+    </body>
+    <script>
+        function link1() {
+        location.href ="{% url 'app:login' %}";
+        }
+        function link2() {
+        location.href ="{% url 'app:signup' %}";
+        }
+    </script>
+</html>

@@ -1,0 +1,303 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+      <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>test</title>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js "></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+        <script src="https://docs.opencv.org/4.5.5/opencv.js"></script>
+        <link rel="stylesheet" href="{% static 'css/style3.css' %}"/>
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h1>Geek Touch Typer</h1>
+            </header>
+            <form>
+                {% csrf_token%}
+                <input class = "back-button" type="button" value="タイトル画面に戻る" onClick="history.back()">
+            </form>
+            <div class="display-none">
+                {% csrf_token %}
+                <canvas id="canvas"> </canvas>
+                <img id="image"> </img>
+            </div>
+            <div class="box-container">
+                <div class="box">
+                    <div class="box-h1">
+                        <h1>調整方法</h1>
+                    </div>
+                    <div class="box-description">
+                        <ol>
+                            <li>
+                                はじめに画面を見ているときの顔画像を送信します。
+                                顔が画像の中央に来るようにした状態で、「画像送信」ボタンを見ながら6回ゆっくりとクリックしてください。
+                            </li>
+                            <li>
+                                次にキーボードを見ているときの顔画像を送信します。
+                                顔が画像の中央に来るようにした状態で、キーボードを見ながら任意のキーを6回ゆっくりと押してください。
+                            </li>
+                            <li>
+                                その後「調整開始」ボタンが押せるようになるので、ボタンを押して調整を開始します。
+                            </li>
+                            <li>
+                                調整が終了すると「難易度選択へ」のボタンが現れるので、ボタンをクリックして難易度選択ページに移動します。
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="send">
+                    <div>
+                        <input class = "button" type="button" value="画像送信" id="send_button">
+                    </div>
+                    <div>
+                        <video id="video" width="320" height="240" autoplay></video>
+                    </div>
+                </div>
+                <div class="box-button">
+                    <div>
+                        <input class = "button" type="button" onclick="balance()" value="調整開始" id="balance_button">
+                    </div>
+                    <div>
+                    <input class = "button" type="button" onclick="link()" value="難易度選択へ" id="m_button">
+                    </div>
+                </div>
+            </div>
+            <footer>
+                <p>Produced by MML</p>
+            </footer>
+        </div>
+    </body>
+    <script>
+        function getCookie(name) {
+          var cookieValue = null;
+          if (document.cookie && document.cookie !== "") {
+            var cookies = document.cookie.split(";");
+            for (var i = 0; i < cookies.length; i++) {
+              var cookie = jQuery.trim(cookies[i]);
+              if (cookie.substring(0, name.length + 1) === name + "=") {
+                cookieValue = decodeURIComponent(
+                  cookie.substring(name.length + 1)
+                );
+                break;
+              }
+            }
+          }
+          return cookieValue;
+        }
+
+        var csrftoken = getCookie("csrftoken");
+
+        function csrfSafeMethod(method) {
+          return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+        }
+
+        $.ajaxSetup({
+          beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+          },
+        });
+
+        window.onload = function(){
+            $.ajax({
+                url: '{% url "app:get_data" %}',
+                type: "POST",
+                data: { type: "cnn", user: userName },
+                dataType: "json",
+            }).done(function (data) {
+                if (data["cnn"]) {
+                    document.getElementById("m_button").style.visibility = 'visible';
+                } else {
+                    document.getElementById("m_button").style.visibility = 'hidden';
+                }
+                console.log(data);
+            });
+        }
+
+        var query2 = location.search;
+        var value2 = query2.split('=');
+
+        var userName = value2[1];
+
+
+        document.getElementById("balance_button").disabled = true;
+
+
+        let cnt;
+
+        function send_img_0() {
+            fd.set("type", "train-0");
+            fd.set("user", userName);
+            $.ajax({
+                url: '{% url "app:get_data" %}',
+                type: "POST",
+                data: fd,
+                processData: false,
+                contentType: false,
+                dataType: "json",
+            }).done(function (data) {
+                cnt++;
+            });
+        }
+
+        var send_cnt = 0;
+        $("#send_button").on("click", function (e) {
+            if (document.getElementById("send_button").disabled === false) {
+                document.getElementById("send_button").setAttribute("disabled", true);
+            }
+            cnt = 0;
+            send_cnt++;
+            if (send_cnt < 7) {
+                const intervalId = setInterval(() =>{
+                send_img_0();
+                if(cnt >= 5){
+                    clearInterval(intervalId);
+                    if (document.getElementById("send_button").disabled === true && send_cnt < 6) {
+                    document.getElementById("send_button").removeAttribute("disabled");
+                    }
+                }}, 200);
+                check_clear();
+            }
+        });
+
+
+
+
+        function send_img_1() {
+            fd.set("type", "train-1");
+            fd.set("user", userName);
+            $.ajax({
+                url: '{% url "app:get_data" %}',
+                type: "POST",
+                data: fd,
+                processData: false,
+                contentType: false,
+                dataType: "json",
+            }).done(function (data) {
+                cnt++;
+            });
+        }
+
+        function check_clear()
+        {
+            if(send_cnt >= 6 && key_cnt >= 6)
+            {
+                document.getElementById("balance_button").disabled = false;
+            }
+        }
+
+
+        var key_cnt = 0;
+        document.addEventListener('keypress', keypress_ivent);
+        function keypress_ivent(e) {
+            cnt = 0;
+            key_cnt++;
+            if (key_cnt < 7) {
+                const intervalId = setInterval(() =>{
+                send_img_1();
+                if(cnt >= 5){
+                clearInterval(intervalId);
+                }}, 200);
+                check_clear();
+            }
+        }
+
+
+
+        $(window).on('beforeunload', function() {
+            $.ajax({
+                url: '{% url "app:get_data" %}',
+                type: "POST",
+                data: { type: "close", user: userName },
+                dataType: "json",
+            }).done(function (data) {
+                console.log(data);
+            });
+        });
+
+
+
+        function balance()
+        {
+            document.getElementById("balance_button").disabled = true;
+            document.getElementById("send_button").disabled = true;
+            $.ajax({
+                url: '{% url "app:get_data" %}',
+                type: "POST",
+                data: {type: "training", user: userName},
+                dataType: "json",
+            }).done(function (data) {
+                if (data["success"]) {
+                    document.getElementById("m_button").style.visibility = 'visible';
+                    document.getElementById("m_button").disabled = false;
+                }
+            });
+        }
+
+        function link()
+        {
+            var query = location.search;
+            var value = query.split('=');
+
+            var temp = value[1];
+
+            location.href = "{% url 'app:diffsec' %}" + "?name=" + encodeURIComponent(temp);
+        }
+
+
+
+
+
+        const video = document.getElementById("video");
+        navigator.mediaDevices
+            .getUserMedia({
+            video: true,
+            audio: false,
+            })
+            .then((stream) => {
+            video.srcObject = stream;
+            video.play();
+            setInterval(draw, 200);
+            })
+            .catch((e) => {
+            console.log(e);
+            });
+
+        const canvas = document.getElementById("canvas");
+        let image = document.getElementById("image");
+
+        canvas.width = 340;
+        canvas.height = 260;
+
+        let fd = new FormData();
+        function draw() {
+            let ctx = canvas.getContext("2d");
+
+            ctx.drawImage(video, 150, 210, 340, 260, 0, 0, canvas.width, canvas.height);
+
+            let mat = cv.imread("canvas");
+            cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0);
+            cv.imshow("canvas", mat);
+            mat.delete();
+
+
+            var base64 = canvas.toDataURL("image/jpeg", 1.0);
+            image.setAttribute("src", base64);
+
+            var bin = atob(base64.replace(/^.*,/, ""));
+            var buffer = new Uint8Array(bin.length);
+            for (var i = 0; i < bin.length; i++) {
+            buffer[i] = bin.charCodeAt(i);
+            }
+            var file = new File([buffer.buffer], "img.jpeg", {
+            type: "image/jpeg",
+            });
+
+            fd.set("img", file);
+        }
+    </script>
+</html>

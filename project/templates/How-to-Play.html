@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Geek Touch Typer</title>
+        {% comment %} <meta name="description" content="GeekTouchTyper"> {% endcomment %}
+        <link rel="stylesheet" href="{% static 'css/style3.css' %}"/>
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h1>Geek Touch Typer</h1>
+            </header>
+            <div>
+                <h1>遊び方</h1>
+                <div class="box-play">
+                    <ol>
+                        <li>
+                            プレイ前に視線検知のための調整を行います。
+                            該当ページに記載の指示に従って調整を行ってください。
+                        </li>
+                        <li>
+                            次にプレイするゲームの難易度を選択します。
+                            「簡単」「通常」「難しい」の3つのレベルからお好きなものを選択してください。
+                        </li>
+                        <li>
+                            その後ゲームをプレイできます。
+                            タイピングミスやキーボードを見ると右上にあるハートが減り、ハートが0になるとGame Overとなります。
+                            プレイ中はカメラの中央に顔が来るように注意してください。
+                            また、プレイ中はツンデレキャラクターのみてちゃんが反応してくれます。
+                        </li>
+                        <li>
+                            Game Clear後はスコアが表示されます。
+                            スコアはミス回数とClear時間に応じて算出されます。
+                            また、難易度が高いほど獲得できる最大スコアが大きくなりますが、その代わりにClearが難しくなります。
+                            高スコアを目指して頑張ってください！
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <footer>
+                <p>Produced by MML</p>
+            </footer>
+        </div>
+    </body>
+</html>

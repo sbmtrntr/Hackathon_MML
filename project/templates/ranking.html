@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        {% comment %} <title>ランキング</title> {% endcomment %}
+        <link rel="stylesheet" href="{% static 'css/style4.css' %}">
+    </head>
+    <body>
+        <p class="score">スコアランキング</p>
+        <div class="container">
+            <input class = "back-button" type="button" value="タイトル画面に戻る" onClick="history.back()">
+        </div>
+        <div>
+            <img src="static/img/mitechan_ranking1.png" alt="みてちゃん" class="back-girl-1">
+            <img src="static/img/mitechan_ranking2.png" alt="みてちゃん" class="back-girl-2">
+            <table>
+                <tr>
+                    <th>順位</th>
+                    <th>名前</th>
+                    <th>スコア</th>
+                    </tr>
+                <tr>
+                    <th id = class_1></th>
+                    <th id = class_1_name></th>
+                    <th id = class_1_score></th>
+                </tr>
+                <tr>
+                    <th id = class_2></th>
+                    <th id = class_2_name></th>
+                    <th id = class_2_score></th>
+                </tr>
+                <tr>
+                    <th id = class_3></th>
+                    <th id = class_3_name></th>
+                    <th id = class_3_score></th>
+                </tr>
+                <tr>
+                    <th id = class_4></th>
+                    <th id = class_4_name></th>
+                    <th id = class_4_score></th>
+                </tr>
+                <tr>
+                    <th id = class_5></th>
+                    <th id = class_5_name></th>
+                    <th id = class_5_score></th>
+                </tr>
+                <tr>
+                    <th id = class_6></th>
+                    <th id = class_6_name></th>
+                    <th id = class_6_score></th>
+                </tr>
+                <tr>
+                    <th id = class_7></th>
+                    <th id = class_7_name></th>
+                    <th id = class_7_score></th>
+                </tr>
+                <tr>
+                    <th id = class_8></th>
+                    <th id = class_8_name></th>
+                    <th id = class_8_score></th>
+                </tr>
+                <tr>
+                    <th id = class_9></th>
+                    <th id = class_9_name></th>
+                    <th id = class_9_score></th>
+                </tr>
+                <tr>
+                    <th id = class_10></th>
+                    <th id = class_10_name></th>
+                    <th id = class_10_score></th>
+                </tr>
+            </table>
+        </div>
+
+        <script>
+
+            var datas = []
+            let tmp = []
+            {% for ranking_data in ranking_list %}
+                tmp = ["{{ranking_data.name}}", "{{ranking_data.score}}"]
+                console.log(tmp)
+                datas.push(tmp)
+            {% endfor %}
+
+            datas.sort( (a, b) => {
+                return  b[b.length -1] - a[a.length - 1]
+            })
+
+            var maxLen = datas.length;
+
+            var ranking = []
+            for(let j = 0; j < 10; j++)
+            {
+                if(maxLen < j+1)
+                {
+                    document.getElementById("class_" + (j+1)).innerHTML = j+1;
+                    document.getElementById("class_" + (j+1) + "_name").innerHTML = "なし";
+                    document.getElementById("class_" + (j+1) + "_score").innerHTML = "なし";
+                }
+                else
+                {
+                    document.getElementById("class_" + (j+1)).innerHTML = j+1;
+                    document.getElementById("class_" + (j+1) + "_name").innerHTML = datas[j][0];
+                    document.getElementById("class_" + (j+1) + "_score").innerHTML = datas[j][1];
+                }
+            }
+
+        </script>
+    </body>
+</html>

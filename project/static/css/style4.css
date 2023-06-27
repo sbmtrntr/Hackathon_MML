@@ -1,0 +1,65 @@
+body {
+  font-family: Arial, sans-serif;
+  background-image: url(../img/backImg.jpg);
+  background-color: #ade0ee;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  margin: 20px auto;
+  text-align: center;
+}
+
+.score {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #d8ebd8;
+  margin-top: 30px;
+  background-color: #e43b3b;
+}
+
+table {
+  width: 35%;
+  margin: 30px auto;
+  position: absolute;
+  top: 220px;
+  right: 0;
+  left: 0;
+  margin: auto;
+  border-collapse: collapse;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+table th {
+  background-color: #fddbd1;
+  color: #333;
+  font-weight: bold;
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #000000;
+}
+
+.back-button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.back-girl-1 {
+  width: 30%;
+  height: 30%;
+  float: left;
+  margin-left: 5%;
+}
+
+.back-girl-2 {
+  width: 30%;
+  height: 30%;
+  float: right;
+  margin-right: 5%;
+}
