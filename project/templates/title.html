@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>ホーム</title>
+        <meta name="description" content="GeekTouchTyper">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h1>Geek Touch Typer</h1>
+            </header>
+            <div class="box-container">
+                <img src="static/img/mitechan_title.png" alt="みてちゃん" class="mite">
+                <div class="box">
+                    <p><input class = "button" type="button" onclick="link1()" value="プレイ"></p>
+                    <p><input class = "button" type="button" onclick="link2()" value="遊び方"></p>
+                    <p><input class = "button" type="button" onclick="ranking()" value="ランキング"></p>
+                </div>
+            </div>
+            <footer>
+                <p>Produced by MML</p>
+            </footer>
+        </div>
+        <script>
+            function link1()
+            {
+                let temp = "{{user.username}}"
+                location.href ="{% url 'app:training' %}" + "?name=" + encodeURIComponent(temp);
+            }
+            function link2()
+            {
+                location.href ="{% url 'app:howToPlay' %}";
+            }
+            function ranking()
+            {
+                let temp = "{{user.username}}"
+                location.href ="{% url 'app:ranking' %}" + "?name=" + encodeURIComponent(temp);
+            }
+        </script>
+    </body>
+</html>

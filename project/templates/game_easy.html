@@ -1,0 +1,1013 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>test</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js "></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://docs.opencv.org/4.5.5/opencv.js"></script>
+
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}" />
+  </head>
+
+  <body>
+    <div class="display-none">
+      {% csrf_token %}
+      <video id="video" width="320" height="240"></video>
+      <canvas id="canvas"> </canvas>
+      <img id="image" />
+    </div>
+    <div class="background">
+      <!-- GameOver画面 -->
+      <div id="fullOverlay">
+        <div class="text">
+          <h1>Game Over</h1>
+        </div>
+        <div class="button1">
+          <input
+            id="retryButton"
+            type="button"
+            value="もう一度"
+            style="width: 200px; height: 50px; font-size: 24px"
+            onclick="retryButton()"
+          />
+        </div>
+        <div class="button2">
+          <input
+            id="GameEndButton"
+            type="button"
+            value="難易度選択に戻る"
+            style="width: 200px; height: 50px; font-size: 24px"
+            onclick="link_origin()"
+          />
+        </div>
+      </div>
+
+      <!-- Game Clear画面 -->
+      <div id="fullOverlay1">
+        <div class="box-container">
+          <img src="static/img/mitechan_clear.png" alt="みてちゃん" class="mite">
+          <div class="box">
+            <div class="text">
+              <h1>Game Clear</h1>
+            </div>
+            <div class="score">
+              <h1 id="finalScore">Score</h1>
+            </div>
+          </div>
+        </div>
+        <div class="button3">
+          <input
+            id="retryButton1"
+            type="button"
+            value="もう一度"
+            style="width: 200px; height: 50px; font-size: 24px"
+            onclick="retryButton()"
+          />
+        </div>
+        <div class="button4">
+          <input
+            id="GameEndButton1"
+            type="button"
+            value="難易度選択に戻る"
+            style="width: 200px; height: 50px; font-size: 24px"
+            onclick="link_origin()"
+          />
+        </div>
+      </div>
+
+      <div id="fullOverlay2">
+        <div class="text">
+          <p>顔がカメラの中央に来るようにしてください</p>
+        </div>
+      </div>
+
+      {% comment %} 台詞画面 {% endcomment %}
+
+      <div id="fullOverlay_P1">
+        <img
+          src="{% static 'img/phrase1.png' %}"
+          class="fullOverlay_P1_balance"
+          width="330"
+          height="auto"
+          id="phrase1"
+        />
+      </div>
+
+      <div id="fullOverlay_P2">
+        <img
+          src="{% static 'img/phrase2.png' %}"
+          class="fullOverlay_P2_balance"
+          width="330"
+          height="auto"
+          id="phrase2"
+        />
+      </div>
+
+      <div id="fullOverlay_P3">
+        <img
+          src="{% static 'img/phrase3.png' %}"
+          class="fullOverlay_P3_balance"
+          width="330"
+          height="auto"
+          id="phrase3"
+        />
+      </div>
+
+      <ul>
+        <p id="timeArea" class="absolute01">0</p>
+        <li>
+          <img
+            src="{% static 'img/HP_1.png' %}"
+            width="50"
+            height="40"
+            id="image1"
+          />
+          <img
+            src="{% static 'img/HP_1.png' %}"
+            width="50"
+            height="40"
+            id="image2"
+          />
+          <img
+            src="{% static 'img/HP_1.png' %}"
+            width="50"
+            height="40"
+            id="image3"
+          />
+          <img
+            src="{% static 'img/HP_1.png' %}"
+            width="50"
+            height="40"
+            id="image4"
+          />
+          <img
+            src="{% static 'img/HP_1.png' %}"
+            width="50"
+            height="40"
+            id="image5"
+          />
+        </li>
+      </ul>
+
+      <div class="girl">
+        <img
+          src="{% static 'img/mitechan_1.png' %}"
+          class="girl_balance"
+          width="330"
+          height="auto"
+          id="imageGirl"
+        />
+        {% comment %}
+        <img src="{% static 'img/mitechan_1.png' %}" id="imageGirl" /> {% endcomment %} {% comment %}
+        <div id="fullOverlay_P2">
+          <img
+            src="{% static 'img/phrase2.png' %}"
+            width="330"
+            height="300"
+            id="phrase2"
+          />
+        </div>
+        <div id="fullOverlay_P3">
+          <img
+            src="{% static 'img/phrase3.png' %}"
+            width="330"
+            height="300"
+            id="phrase3"
+          />
+        </div>
+        {% endcomment %}
+      </div>
+      <div class="container">
+        <h1 id="answer" class="text">Pressed Enter Key</h1>
+        <p id="start" class="text"></p>
+      </div>
+    </div>
+
+
+    <script>
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      var csrftoken = getCookie("csrftoken");
+
+      function csrfSafeMethod(method) {
+        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        },
+      });
+
+      let query = location.search;
+      let value = query.split("=");
+
+      var userName = value[1]; //userを取得
+
+      var ScoreLis = [0];
+
+      $("#fullOverlay").css({
+        //ゲームオーバー画面を下にしておく
+        display: "none",
+        "z-index": -10,
+      });
+      $("#fullOverlay1").css({
+        //ゲームクリア画面を下にしておく
+        display: "none",
+        "z-index": -10,
+      });
+      $("#fullOverlay2").css({
+        display: "none",
+        "z-index": -10,
+      });
+
+      let ans = [
+        "push",
+        "pull",
+        "branch",
+        "git",
+        "add",
+        "commit",
+        "origin",
+        "main",
+        "clone",
+        "remote",
+        "checkout",
+        "switch",
+        "fetch",
+        "merge",
+        "ls",
+        "cd",
+        "pwd",
+        "mkdir",
+        "rm",
+        "cp",
+        "mv",
+        "touch",
+        "cat",
+        "grep",
+        "ps",
+        "kill",
+        "bg",
+        "fg",
+        "echo",
+        "read",
+        "apt",
+        "yum",
+        "brew",
+        "chmod",
+        "bool",
+        "break",
+        "byte",
+        "case",
+        "catch",
+        "char",
+        "class",
+        "const",
+        "do",
+        "double",
+        "else",
+        "enum",
+        "event",
+        "false",
+        "fixed",
+        "float",
+        "for",
+        "goto",
+        "if",
+        "is",
+        "long",
+        "new",
+        "null",
+        "object",
+        "out",
+        "ref",
+        "return",
+        "static",
+        "string",
+        "switch",
+        "this",
+        "throw",
+        "true",
+        "try",
+        "using",
+        "void",
+        "while",
+      ];
+      let Q = [
+        "push",
+        "pull",
+        "branch",
+        "git",
+        "add",
+        "commit",
+        "origin",
+        "main",
+        "clone",
+        "remote",
+        "checkout",
+        "switch",
+        "fetch",
+        "merge",
+        "ls",
+        "cd",
+        "pwd",
+        "mkdir",
+        "rm",
+        "cp",
+        "mv",
+        "touch",
+        "cat",
+        "grep",
+        "ps",
+        "kill",
+        "bg",
+        "fg",
+        "echo",
+        "read",
+        "apt",
+        "yum",
+        "brew",
+        "chmod",
+        "bool",
+        "break",
+        "byte",
+        "case",
+        "catch",
+        "char",
+        "class",
+        "const",
+        "do",
+        "double",
+        "else",
+        "enum",
+        "event",
+        "false",
+        "fixed",
+        "float",
+        "for",
+        "goto",
+        "if",
+        "is",
+        "long",
+        "new",
+        "null",
+        "object",
+        "out",
+        "ref",
+        "return",
+        "static",
+        "string",
+        "switch",
+        "this",
+        "throw",
+        "true",
+        "try",
+        "using",
+        "void",
+        "while",
+      ];
+
+      var Q_nums = [];
+      var Qmaxlength = ans.length;
+
+      for (let i = 0; i < Qmaxlength; i++) {
+        Q_nums.push(i); //問題の出す順番の羅列
+      }
+
+      for (let i = 0; i < 5; i++) {
+        arrayShuffle(Q_nums); //順番のシャッフル
+      }
+      let Q_char_i = 0; //回答初期値・現在単語どこまで合っているか判定している文字番号
+
+      let Q_i = 0; //今何問目かを保存
+
+      let Q_No = Q_nums[Q_i]; //最初に出す問題番号の取得
+
+      let Q_l = Q[Q_No].length; //計算用の文字の長さ
+
+      window.addEventListener("keydown", push_Keydown); //ボタンを押したら行う処理を登録
+
+      var hp = new Image();
+      hp.src = "static/img/HP_0.png"; //HPが減ったとき用の画像
+
+      var hp_max = 5; //hpの数
+      // let miss = 0;
+
+      var startflag = 0; //ゲーム開始フラグ
+
+      let oneStopFlag = 0; //ゲーム一時停止フラグ
+
+      var deadFlag = 0; //ゲームオーバーフラグ
+
+      var PassSec = 0;
+
+      var stop_flag = false;
+
+      var perfect_num = 0;
+
+      var problemNum = 15;
+
+      var img_2 = new Image();
+      img_2.src = "static/img/mitechan_2.png";
+
+      var img_3 = new Image();
+      img_3.src = "static/img/mitechan_3.png";
+
+      var img_4 = new Image();
+      img_4.src = "static/img/mitechan_4.png";
+
+      function push_Keydown(event) {
+        //こっからはボタンを押したときの処理
+        let keyCode = event.key;
+
+        if (startflag == 1 && deadFlag == 0) {
+          //ゲームがスタートしていて、gameoverしてなかったら
+          if (Q_l == Q_l - Q_char_i) {
+            //開始直後
+            document.getElementById("start").innerHTML = String.raw({
+              raw: Q[Q_No].substring(Q_char_i, Q_l),
+            }); //問題を書き出す
+            document.getElementById("answer").innerHTML = String.raw({
+              raw: ans[Q_No],
+            });
+          }
+          if ("Shift" == keyCode) {
+            return;
+          }
+          if (Q[Q_No].charAt(Q_char_i) == keyCode) {
+            //押したキーが合っていたら
+            Q_char_i++; //番号を一つ進める１足す
+
+            //文字の色を変える
+            if (" " == keyCode) {
+              document.getElementById("start").innerHTML =
+                '<span style="color:red;">' +
+                String.raw({ raw: Q[Q_No].substring(0, Q_char_i - 1) }) +
+                "_" +
+                "</span>" +
+                String.raw({ raw: Q[Q_No].substring(Q_char_i, Q_l) });
+            } else {
+              document.getElementById("start").innerHTML =
+                '<span style="color:red;">' +
+                String.raw({ raw: Q[Q_No].substring(0, Q_char_i) }) +
+                "</span>" +
+                String.raw({ raw: Q[Q_No].substring(Q_char_i, Q_l) });
+            }
+
+            if (Q_l == Q_char_i) {
+              //全部の文字に正解したら
+              if (Q_i < problemNum - 1) {
+                //それが最終問題でなかったら
+                Q_i++; //次の問題番号のindexを取得
+                Q_No = Q_nums[Q_i]; //問題番号の取得
+                Q_l = Q[Q_No].length; //計算用の文字の長さ
+                Q_char_i = 0; //文字のインデックスの初期化
+
+                perfect_num++;
+                if (oneStopFlag == 0) {
+                  if (perfect_num >= 5) {
+                    perfect_num = 0;
+                    document.getElementById("imageGirl").src = img_4.src;
+                    $("#fullOverlay_P3").css({
+                      //game clear画面の出力
+                      display: "block",
+                      "z-index": 20,
+                    });
+                    jumping();
+                    setTimeout(function () {
+                      $("#fullOverlay_P3").css({
+                        display: "block",
+                        "z-index": -20,
+                      });
+                      var img_g2 = new Image();
+
+                      img_g2.src = "static/img/mitechan_1.png";
+                      document.getElementById("imageGirl").src = img_g2.src;
+                    }, 3000);
+                  }
+                }
+
+                document.getElementById("start").innerHTML = String.raw({
+                  raw: Q[Q_No].substring(Q_char_i, Q_l),
+                }); //新たな問題を書き出す
+                document.getElementById("answer").innerHTML = String.raw({
+                  raw: ans[Q_No],
+                });
+              } else {
+                //最終問題まで突破したら
+                stop_flag = true;
+                clearInterval(PassageID); // タイマーを止める
+                deadFlag = 1; //game over兼clearフラグを上げる
+                $("#fullOverlay1").css({
+                  //game clear画面の出力
+                  display: "block",
+                  "z-index": 100,
+                });
+
+                getScore();
+
+                setTimeout(send_finish, 3000);
+              }
+            }
+          } else {
+            //キー入力を間違えたら
+            if (oneStopFlag == 0) {
+              perfect_num = 0;
+              // miss++;
+              hp_max = hpDown(hp_max, hp); //hpを減らす
+              document.getElementById("imageGirl").src = img_3.src;
+              jumping();
+              $("#fullOverlay_P2").css({
+                //game clear画面の出力
+                display: "block",
+                "z-index": 20,
+              });
+              if (hp_max == 0) {
+                //体力0になったら終わり
+                deadEnd();
+              }
+              oneStopFlag = 1;
+              let stopperBreak = () => (oneStopFlag = 0);
+              let phrase2 = () =>
+                $("#fullOverlay_P2").css({
+                  display: "block",
+                  "z-index": -20,
+                });
+              setTimeout(phrase2, 3000);
+              setTimeout(stopperBreak, 1000);
+              setTimeout(function () {
+                $("#fullOverlay_P2").css({
+                  display: "block",
+                  "z-index": -20,
+                });
+                var img_g2 = new Image();
+
+                img_g2.src = "static/img/mitechan_1.png";
+                document.getElementById("imageGirl").src = img_g2.src;
+              }, 3000);
+            }
+          }
+        } else if (startflag == 0) {
+          //ゲーム開始してなかったら
+          if (keyCode == "Enter") {
+            startflag = 1; //開始フラグを立てる
+            document.getElementById("start").innerHTML = Q[Q_No].substring(
+              Q_char_i,
+              Q_l
+            ); //問題を書き出す
+            document.getElementById("answer").innerHTML = ans[Q_No];
+            PassageID = setInterval("showPassage()", 100);
+
+            const camerafunc = setInterval(() => {
+              send_img_temp();
+              if (stop_flag) {
+                clearInterval(camerafunc);
+              }
+            }, 300);
+          }
+        }
+      }
+
+      var mis_look = 0;
+      var no_face = 0;
+      function send_img_temp() {
+        fd.set("type", "temp");
+        fd.set("user", userName);
+        $.ajax({
+          url: '{% url "app:get_data" %}',
+          type: "POST",
+          data: fd,
+          processData: false,
+          contentType: false,
+          dataType: "json",
+        }).done(function (data) {
+          if (data["result"] == 1) {
+            hideMessage();
+            no_face = 0;
+            mis_look++;
+            if (oneStopFlag == 0) {
+              if (mis_look >= 2) {
+                hp_max = hpDown(hp_max, hp);
+                // miss++;
+                mis_look = 0;
+
+                //tundere responce
+                document.getElementById("imageGirl").src = img_2.src;
+                $("#fullOverlay_P1").css({
+                  display: "block",
+                  "z-index": 20,
+                });
+                jumping();
+
+                oneStopFlag = 1;
+                let stopperBreak = () => (oneStopFlag = 0);
+                setTimeout(stopperBreak, 1000);
+
+                setTimeout(function () {
+                  $("#fullOverlay_P1").css({
+                    display: "block",
+                    "z-index": -20,
+                  });
+                  var img_g2 = new Image();
+
+                  img_g2.src = "static/img/mitechan_1.png";
+                  document.getElementById("imageGirl").src = img_g2.src;
+                }, 3000);
+
+                if (hp_max == 0) {
+                  //体力0になったら終わり
+                  deadEnd();
+                }
+              }
+            }
+          } else if (data["result"] == 2) {
+            no_face++;
+            if (no_face >= 2) {
+              $("#fullOverlay2").css({
+                display: "block",
+                "z-index": 30,
+              });
+            }
+            mis_look = 0;
+          } else {
+            hideMessage();
+            no_face = 0;
+            mis_look = 0;
+          }
+        });
+      }
+
+      function send_finish() {
+        $.ajax({
+          url: '{% url "app:get_data" %}',
+          type: "POST",
+          data: { type: "finish", user: userName },
+          dataType: "json",
+        }).done(function (data) {
+          console.log(data);
+        });
+      }
+
+
+      $(window).on('beforeunload', function() {
+        $.ajax({
+          url: '{% url "app:get_data" %}',
+          type: "POST",
+          data: { type: "close", user: userName },
+          dataType: "json",
+        }).done(function (data) {
+          console.log(data);
+        });
+      });
+
+
+
+      // ここからはfunction群
+
+      function hidePhrase3() {
+        $("#fullOverlay_P3").css({
+          display: "block",
+          "z-index": -20,
+        });
+        var img_g2 = new Image();
+        img_g2.src = "static/img/mitechan_1.png";
+        document.getElementById("imageGirl").src = img_g2.src;
+      }
+
+      function hidePhrase2() {
+        $("#fullOverlay_P2").css({
+          display: "block",
+          "z-index": -20,
+        });
+      }
+
+      function hideMessage() {
+        $("#fullOverlay2").css({
+          display: "none",
+          "z-index": -100,
+        });
+      }
+
+      function arrayShuffle(array) {
+        for (let i = array.length - 1; 0 < i; i--) {
+          // 0〜(i+1)の範囲で値を取得
+          let r = Math.floor(Math.random() * (i + 1));
+
+          // 要素の並び替えを実行
+          let tmp = array[i];
+          array[i] = array[r];
+          array[r] = tmp;
+        }
+        return array;
+      }
+
+      function hpDown(hp, hpImg) {
+        //hp失ったときの処理
+        let imgname = "image" + hp;
+        document.getElementById(imgname).src = hpImg.src;
+        hp = hp - 1;
+        shivering(imgname);
+        return hp;
+      }
+
+      function shivering(imageName) {
+        //パーツ揺らす処理
+        document.getElementById(imageName).animate(
+          [
+            {
+              offset: 0.0,
+              transform: "translate(0, 0)",
+            },
+            {
+              offset: 0.05,
+              transform: "translate(-20%, 0)",
+            },
+            {
+              offset: 0.1,
+              transform: "translate(20%, 0)",
+            },
+            {
+              offset: 0.15,
+              transform: "translate(-20%, 0)",
+            },
+            {
+              offset: 0.2,
+              transform: "translate(20%, 0)",
+            },
+            {
+              offset: 0.25,
+              transform: "translate(-20%, 0)",
+            },
+            {
+              offset: 0.3,
+              transform: "translate(20%, 0)",
+            },
+            {
+              offset: 1.0,
+              transform: "translate(0, 0)",
+            },
+          ],
+          {
+            duration: 1000, //再生時間（ミリ秒）
+            easing: "linear", //イージング
+          }
+        );
+      }
+
+      function jumping() {
+        //パーツ揺らす処理
+        document.getElementById("imageGirl").animate(
+          [
+            {
+              offset: 0.0,
+              transform: "translate(0, 0)",
+            },
+            {
+              offset: 0.1,
+              transform: "translate(0, -10%)",
+            },
+            {
+              offset: 0.2,
+              transform: "translate(0, -15%)",
+            },
+            {
+              offset: 0.3,
+              transform: "translate(0, -10%)",
+            },
+            {
+              offset: 0.4,
+              transform: "translate(0, 0)",
+            },
+            {
+              offset: 0.5,
+              transform: "translate(0, -10%)",
+            },
+            {
+              offset: 0.6,
+              transform: "translate(0, -15%)",
+            },
+            {
+              offset: 0.7,
+              transform: "translate(0, -10%)",
+            },
+            {
+              offset: 0.8,
+              transform: "translate(0, 0)",
+            },
+            {
+              offset: 1.0,
+              transform: "translate(0, 0)",
+            },
+          ],
+          {
+            duration: 1000, //再生時間（ミリ秒）
+            easing: "linear", //イージング
+          }
+        );
+      }
+
+      function deadEnd() {
+        //HPが尽きたら
+        stop_flag = true;
+        clearInterval(PassageID); // タイマーを止める
+        deadFlag = 1; //game overフラグを上げる
+        $("#fullOverlay").css({
+          //game over画面の出力
+          display: "block",
+          "z-index": 100,
+        });
+        setTimeout(send_finish, 3000);
+      }
+
+      function getScore() {
+        //スコア算出
+        let time = Math.max((PassSec - 15) * 100, 0);
+        let minus = 2000 * (2 / (1 + Math.exp(-0.001 * time)) - 1); //シグモイド関数
+        let Score = (2000 - minus) * hp_max / 5;
+        ScoreLis.push(Score.toFixed(0));
+        document.getElementById("finalScore").innerHTML =
+          "Your Score : " + Score.toFixed(0);
+      }
+
+      //時間を進める
+      function showPassage() {
+        PassSec = PassSec + 0.1; // カウントアップ
+        let time = PassSec.toFixed(1); // 表示文作成
+        document.getElementById("timeArea").innerHTML = time; // 表示更新
+      }
+
+      function retryButton() {
+        //もう一度を選んだ場合の初期化処理
+        stop_flag = false;
+
+        Q_nums = [];
+        for (let i = 0; i < Qmaxlength; i++) {
+          Q_nums.push(i); //問題の出す順番の羅列
+        }
+        for (let i = 0; i < 5; i++) {
+          arrayShuffle(Q_nums); //順番のシャッフル
+        }
+        Q_char_i = 0; //回答初期値・現在単語どこまで合っているか判定している文字番号
+        Q_i = 0; //今何問目かを保存
+        Q_No = Q_nums[Q_i]; //最初に出す問題番号の取得
+        Q_l = Q[Q_No].length; //計算用の文字の長さ
+
+        hp_max = 5; //hpの数値
+        // miss = 0;
+
+        startflag = 0; //ゲーム開始フラグ
+        oneStopFlag = 0; //ゲーム一時停止フラグ
+        deadFlag = 0; //ゲームオーバーフラグ
+
+        PassSec = 0; //時間経過保存変数
+
+        no_face = 0;
+
+        $("#fullOverlay").css({
+          //ゲームオーバー画面を下にしておく
+          display: "none",
+          "z-index": -10,
+        });
+
+        $("#fullOverlay1").css({
+          //ゲームクリア画面を下にしておく
+          display: "none",
+          "z-index": -10,
+        });
+
+        $("#fullOverlay2").css({
+          display: "none",
+          "z-index": -10,
+        });
+
+        document.getElementById("answer").innerHTML = "Pressed Enter Key"; //画面の初期化
+        document.getElementById("start").innerHTML = "";
+
+        let hp_img = new Image();
+        hp_img.src = "static/img/HP_1.png"; //HPがあるとき用の画像
+        document.getElementById("image1").src = hp_img.src; //体力を満タンに戻す
+        document.getElementById("image2").src = hp_img.src;
+        document.getElementById("image3").src = hp_img.src;
+        document.getElementById("image4").src = hp_img.src;
+        document.getElementById("image5").src = hp_img.src;
+
+        document.getElementById("timeArea").innerHTML = 0; // 時間をリセット
+
+        mis_look = 0;
+
+        perfect_num = 0;
+      }
+
+      function link_origin() {
+        let query = location.search;
+        let value = query.split("=");
+
+        var temp = value[1];
+
+        SaveScore();
+
+        location.href =
+          "{% url 'app:diffsec' %}" + "?name=" + encodeURIComponent(temp);
+      }
+
+      //DataBaseの更新
+      function SaveScore() {
+        let query = location.search;
+        let value = query.split("=");
+
+        var temp = value[1];
+
+        var tags = [temp, Math.max.apply(null, ScoreLis)];
+
+        $.ajax({
+          url: "{% url 'app:save_data' %}",
+          dataType: "text",
+          data: { "tags": tags },
+          type: "POST",
+        }).done(function (data) {
+          console.log(data);
+        });
+      }
+
+      //カメラ起動
+      const cv = window.cv;
+      const video = document.getElementById("video");
+      navigator.mediaDevices
+        .getUserMedia({
+          video: true,
+          audio: false,
+        })
+        .then((stream) => {
+          video.srcObject = stream;
+          video.play();
+          setInterval(draw, 200);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+
+      const canvas = document.getElementById("canvas");
+      let image = document.getElementById("image");
+
+      canvas.width = 340;
+      canvas.height = 260;
+
+      let fd = new FormData();
+      function draw() {
+        let ctx = canvas.getContext("2d");
+
+        ctx.drawImage(
+          video,
+          150,
+          210,
+          340,
+          260,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+
+        let mat = cv.imread("canvas");
+        cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0);
+        cv.imshow("canvas", mat);
+        mat.delete();
+
+        var base64 = canvas.toDataURL("image/jpeg", 1.0);
+        image.setAttribute("src", base64);
+
+        var bin = atob(base64.replace(/^.*,/, ""));
+        var buffer = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) {
+          buffer[i] = bin.charCodeAt(i);
+        }
+        var file = new File([buffer.buffer], "img.jpeg", {
+          type: "image/jpeg",
+        });
+
+        fd.set("img", file);
+      }
+    </script>
+  </body>
+</html>

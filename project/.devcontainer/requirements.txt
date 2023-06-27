@@ -1,0 +1,7 @@
+numpy
+django
+django-widget-tweaks
+Pillow
+opencv-python-headless
+imutils
+dlib

@@ -1,0 +1,50 @@
+{% load static %}
+{% load widget_tweaks %}
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>ユーザー登録</title>
+        <meta name="description" content="GeekTouchTyper">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h1>Geek Touch Typer</h1>
+            </header>
+            <div class="box-container">
+                <img src="static/img/mitechan_signup.png" alt="みてちゃん" class="mite">
+                <div class="box-signup">
+                    <h2>ユーザー登録</h2>
+                    <form action="{% url 'app:signup' %}" method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <p>
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}
+                            <p><small style="color: grey">{{ field.help_text }}</small></p>
+                            <br>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <p style="color: red">{{ error }}</p>
+                            {% endfor %}
+                            </p>
+                        {% endfor %}
+                        <p><input class="button" type="submit" onclick="link()" value="登録"></p>
+                    </form>
+                </div>
+            </div>
+            <footer>
+                <p>Produced by MML</p>
+            </footer>
+        </div>
+    </body>
+    <script>
+        function link()
+        {
+            location.href = "{% url 'app:title' %}";
+        }
+    </script>
+</html>
