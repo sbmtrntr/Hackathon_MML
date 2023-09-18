@@ -75,10 +75,11 @@ class EyeDataset(data.Dataset):
                 continue
             eye_img = eye_crop(img, landmark)
             self.imgs.append(eye_img)
-            self.labels.append(int(file_list[i].split('/')[4]))
-            # windowsの場合
-            # split_name = file_list[i].split('/')[3]
-            # self.labels.append(int(split_name.split('\\')[1]))
+            if '\\' in file_list[i]:
+                split_name = file_list[i].split('/')[3]
+                self.labels.append(int(split_name.split('\\')[1]))
+            else:
+                self.labels.append(int(file_list[i].split('/')[4]))
 
     def __len__(self):
         return len(self.labels)
